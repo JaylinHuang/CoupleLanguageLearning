@@ -1,0 +1,7 @@
+services/
+scripts/
+data/hsk/wordlists/
+data/hsk/hsk30-grammar.csv
+node_modules/
+.env
+.env.local

@@ -1,0 +1,54 @@
+{
+  "name": "erikas-chinese-learning",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "vercel-build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "ai:index": "tsx scripts/index-knowledge.ts",
+    "ai:index:incremental": "tsx scripts/index-knowledge.ts -- --incremental",
+    "ai:bench": "tsx scripts/bench-ai.ts",
+    "ai:report": "tsx scripts/generate-performance-report.ts",
+    "hsk:download": "tsx scripts/download-hsk-data.ts",
+    "hsk:import": "tsx scripts/import-hsk.ts",
+    "pgvector:setup": "tsx scripts/setup-pgvector.ts",
+    "ai-service:dev": "tsx watch services/ai-service/src/server.ts",
+    "ai-service:start": "tsx services/ai-service/src/server.ts",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@vercel/blob": "^2.6.1",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.4.2",
+    "jose": "^6.0.11",
+    "next": "^15.3.4",
+    "nodemailer": "^7.0.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.15.32",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "eslint": "^9.29.0",
+    "eslint-config-next": "^15.3.4",
+    "postcss": "^8.5.6",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4.1.11",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

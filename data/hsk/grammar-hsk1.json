@@ -1,0 +1,50 @@
+[
+  {
+    "hskLevel": 1,
+    "point": "是...的 (shì...de) — emphasis structure",
+    "explanation": "Used to emphasize a particular detail in a sentence, often about time, place, or manner.",
+    "examples": ["我是2005年出生的。", "我们是在上海认识的。"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "很 + adjective",
+    "explanation": "很 (hěn) before an adjective means 'very'. In HSK1, 很 is often required even without strong emphasis.",
+    "examples": ["你很漂亮。", "我很高兴。"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "吗 (ma) — question particle",
+    "explanation": "Placed at the end of a statement to turn it into a yes/no question.",
+    "examples": ["你好吗？", "你是学生吗？"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "的 (de) — possessive/descriptive particle",
+    "explanation": "Connects a modifier to a noun, similar to 's or 'of' in English.",
+    "examples": ["我的名字", "亲爱的老婆"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "不 (bù) — negation",
+    "explanation": "Placed before verbs or adjectives to negate. Tone changes to bú before 4th tone.",
+    "examples": ["不客气", "我不去"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "想 (xiǎng) — want / miss",
+    "explanation": "Can mean 'to want to do something' or 'to miss someone'.",
+    "examples": ["我想你。", "我想打电话。"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "怎么样 (zěnmeyàng) — how about / how is it",
+    "explanation": "Used to ask for opinions or describe how something is going.",
+    "examples": ["今天怎么样？", "上海怎么样？"]
+  },
+  {
+    "hskLevel": 1,
+    "point": "请 (qǐng) — please (polite request)",
+    "explanation": "Makes requests polite. Often used with 问, 坐, etc.",
+    "examples": ["请坐。", "请问，你叫什么名字？"]
+  }
+]

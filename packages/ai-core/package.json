@@ -1,0 +1,10 @@
+{
+  "name": "@erika/ai-core",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  }
+}

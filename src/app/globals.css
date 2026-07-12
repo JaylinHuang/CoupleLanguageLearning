@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fff8f3;
+  --color-coral: #f8b4b4;
+  --color-coral-dark: #e88989;
+  --color-blush: #fde8e8;
+  --color-warm-brown: #5c4033;
+  --color-warm-gray: #8b7355;
+  --color-wood: #d4a574;
+  --color-china-red: #c41e3a;
+  --color-success: #7cb88a;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-chinese: var(--font-noto-sc), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(248, 180, 180, 0.15), transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(212, 165, 116, 0.12), transparent 40%);
+}
+
+.font-chinese {
+  font-family: var(--font-noto-sc), "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.card {
+  @apply rounded-2xl border border-blush/60 bg-white/80 shadow-sm backdrop-blur-sm;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-xl bg-coral px-4 py-2.5 text-sm font-medium text-white transition hover:bg-coral-dark disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-xl border border-blush bg-white px-4 py-2.5 text-sm font-medium text-warm-brown transition hover:bg-blush/50 disabled:opacity-50;
+}
+
+.input {
+  @apply w-full rounded-xl border border-blush bg-white px-4 py-2.5 text-sm text-warm-brown outline-none transition focus:border-coral focus:ring-2 focus:ring-coral/20;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full bg-blush px-2.5 py-0.5 text-xs font-medium text-coral-dark;
+}

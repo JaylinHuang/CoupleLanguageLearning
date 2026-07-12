@@ -1,0 +1,4 @@
+/** Simple SVG placeholder icons — replace with custom couple-themed PNGs later */
+export default function Icon192() {
+  return null;
+}

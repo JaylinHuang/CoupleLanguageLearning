@@ -1,0 +1,250 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  displayName  String
+  role         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  progress            UserProgress?
+  lessonProgress      LessonProgress[]
+  reviewCards         ReviewCard[]
+  wishes              WishItem[]
+  homeworkAssigned    Homework[]           @relation("HomeworkAssigner")
+  homeworkSubmissions HomeworkSubmission[]
+  notifications       Notification[]
+  achievements        Achievement[]
+}
+
+model UserProgress {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hskLevel      Int       @default(1)
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  streak        Int       @default(0)
+  longestStreak Int       @default(0)
+  lastStudyDate DateTime?
+  updatedAt     DateTime  @updatedAt
+}
+
+model Word {
+  id           String   @id @default(cuid())
+  simplified   String
+  traditional  String?
+  pinyin       String
+  pinyinNumber String
+  english      String
+  tagalogShort String?
+  hskLevel     Int      @default(1)
+  audioUrl     String?
+  isCustom     Boolean  @default(false)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lessonWords LessonWord[]
+  reviewCards ReviewCard[]
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  hskLevel    Int      @default(1)
+  sceneTag    String?
+  order       Int      @default(0)
+  content     String
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  words    LessonWord[]
+  progress LessonProgress[]
+}
+
+model LessonWord {
+  id       String @id @default(cuid())
+  lessonId String
+  wordId   String
+  order    Int    @default(0)
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  word     Word   @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, wordId])
+}
+
+model LessonProgress {
+  id          String    @id @default(cuid())
+  userId      String
+  lessonId    String
+  status      String    @default("NOT_STARTED")
+  score       Int?
+  completedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model ReviewCard {
+  id          String    @id @default(cuid())
+  userId      String
+  wordId      String
+  ease        Float     @default(2.5)
+  interval    Int       @default(0)
+  repetitions Int       @default(0)
+  dueDate     DateTime  @default(now())
+  markedHard  Boolean   @default(false)
+  lastReview  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word        Word      @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+}
+
+model PersonCard {
+  id        String   @id @default(cuid())
+  name      String
+  relation  String
+  avatarUrl String?
+  phrases   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WishItem {
+  id        String   @id @default(cuid())
+  userId    String
+  text      String
+  status    String   @default("OPEN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Homework {
+  id           String   @id @default(cuid())
+  assignedById String
+  title        String
+  description  String?
+  payload      String
+  dueDate      DateTime?
+  status       String   @default("ASSIGNED")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  assignedBy   User     @relation("HomeworkAssigner", fields: [assignedById], references: [id], onDelete: Cascade)
+  submissions  HomeworkSubmission[]
+}
+
+model HomeworkSubmission {
+  id          String   @id @default(cuid())
+  homeworkId  String
+  userId      String
+  textAnswer  String?
+  audioPath   String?
+  submittedAt DateTime @default(now())
+  feedback    String?
+  reviewedAt  DateTime?
+  homework    Homework @relation(fields: [homeworkId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Achievement {
+  id         String   @id @default(cuid())
+  userId     String
+  badgeId    String
+  unlockedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model SiteSetting {
+  key   String @id
+  value String
+}
+
+// ── AI / RAG knowledge base ──────────────────────────────────────────
+
+model KnowledgeChunk {
+  id         String   @id @default(cuid())
+  sourceType String   // word | grammar | example | lesson | culture
+  sourceId   String?
+  hskLevel   Int?
+  content    String   // human-readable text used for embedding
+  metadata   String   // JSON: { simplified, pinyin, english, ... }
+  embedding  String?  // JSON float[] — pgvector column added via setup script
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([sourceType])
+  @@index([hskLevel])
+  @@index([sourceId])
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  userId    String
+  agentType String?
+  summary   String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  messages  ChatMessage[]
+
+  @@index([userId])
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role      String      // user | assistant | system
+  content   String
+  metadata  String?     // JSON: { ragSources, latencyMs, agentType }
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId])
+}
+
+model AiCallLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  endpoint  String
+  prompt    String
+  response  String?
+  latencyMs Int
+  tokensIn  Int?
+  tokensOut Int?
+  metadata  String?  // JSON: { model, ragHits, agentType }
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
