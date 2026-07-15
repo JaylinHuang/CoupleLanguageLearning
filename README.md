@@ -4,15 +4,18 @@ Private Chinese learning site for Erika — **Jaylin_love_Erika**
 
 A warm, couple-themed web app to help Erika learn Simplified Mandarin (HSK-based), with personalized content from Lin, spaced repetition, homework, and email notifications.
 
-## Features (P0–P4)
+## Features (P0–P9+)
 
-- **Learner app** (Erika): daily plan, HSK lessons, SRS review, listening quiz, speaking (record & compare), typing practice, AI chat with Lin, Lin's phrase card, vocabulary, homework, profile
-- **Admin app** (Lin): dashboard, add words/lessons, assign homework, review submissions, progress & wishes
+- **Learner app** (Erika): daily main-task home, bottom nav, HSK lessons (instant quiz feedback + mistakes book), SRS review (offline sync), practice hub (dictation, writing check, smart quiz, roleplay, handwriting, listen/speak/type), AI chat, homework (voice), vocabulary & wishes, profile vocab charts
+- **Admin app** (Lin): dashboard, lesson visual editor, vocabulary, homework with voice messages, progress (attempts, writing corrections, daily/weekly report buttons)
 - **Auth**: simple password login (`erika` / `lin`)
-- **Email**: notifications to `NOTIFY_EMAIL` (see `.env.example`)
-- **AI**: DeepSeek chat as Lin with RAG + SSE streaming (`/practice/ai`)
-- **AI Backend**: Modular RAG pipeline, Agent routing, knowledge indexing — see [docs/AI_ARCHITECTURE.zh-CN.md](./docs/AI_ARCHITECTURE.zh-CN.md), [docs/AI_PERFORMANCE.md](./docs/AI_PERFORMANCE.md)
-- **PWA-ready**: `manifest.json` included
+- **Email** (to `NOTIFY_EMAIL`):
+  - **Daily digest** 23:00 Beijing time (lessons, mistakes, reviews, writing, homework…)
+  - **Weekly report** Sunday night 24:00 / Monday 00:00 Beijing
+  - **Immediate** only for new learning **wishes**
+  - No immediate email on lesson complete or homework submit
+- **AI**: DeepSeek + RAG + SSE; see [docs/AI_ARCHITECTURE.zh-CN.md](./docs/AI_ARCHITECTURE.zh-CN.md)
+- **PWA**: offline-friendly review via service worker
 
 ## Quick start
 
@@ -54,6 +57,7 @@ Change passwords in `.env` before seeding, or update hashes in the database.
 | `RAG_TOP_K` / `RAG_RERANK_TOP_K` | Retrieval tuning (defaults: 8 / 4) |
 | `SMTP_*` | QQ mail SMTP for notifications |
 | `NOTIFY_EMAIL` | Lin's notification email |
+| `CRON_SECRET` | Optional; protects `/api/cron/*` (Vercel Cron) |
 | `NEXT_PUBLIC_SITE_NAME` | `Jaylin_love_Erika` |
 
 ### QQ Mail SMTP setup
@@ -118,11 +122,11 @@ Region: `hkg1` (Hong Kong) is set in `vercel.json` for CN ↔ PH latency.
 | 文档 | 说明 |
 |------|------|
 | [docs/LIN_MAINTAINER_GUIDE.zh-CN.md](./docs/LIN_MAINTAINER_GUIDE.zh-CN.md) | 维护者技术手册（Lin） |
+| [docs/ERIKA_USER_GUIDE.en.md](./docs/ERIKA_USER_GUIDE.en.md) | Erika 使用指南（英文） |
 | [docs/AI_ARCHITECTURE.zh-CN.md](./docs/AI_ARCHITECTURE.zh-CN.md) | AI 架构（RAG + Agent + SSE） |
 | [docs/AI_MICROSERVICE.zh-CN.md](./docs/AI_MICROSERVICE.zh-CN.md) | AI 微服务模式 |
 | [docs/AI_PERFORMANCE.md](./docs/AI_PERFORMANCE.md) | 性能测试报告 |
 | [docs/AI_BLOG.zh-CN.md](./docs/AI_BLOG.zh-CN.md) | 技术博客草稿 |
-| [docs/ERIKA_USER_GUIDE.en.md](./docs/ERIKA_USER_GUIDE.en.md) | Erika 使用指南（英文） |
 | [DEPLOY.md](./DEPLOY.md) | 公网部署指南 |
 | [BLOB_SETUP.md](./BLOB_SETUP.md) | Vercel Blob 录音存储 |
 

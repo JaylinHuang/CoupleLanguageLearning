@@ -95,6 +95,42 @@ export function buildListeningExercises(words: WordInput[]): ListeningExercise[]
   return shuffle(exercises).slice(0, 10);
 }
 
+export type DictationExercise = {
+  id: string;
+  chinese: string;
+  pinyin: string;
+  pinyinNumber: string;
+  english: string;
+};
+
+// 听写练习：播放发音，输入汉字或拼音
+export function buildDictationExercises(words: WordInput[]): DictationExercise[] {
+  return shuffle(words)
+    .slice(0, 8)
+    .map((w) => ({
+      id: w.id,
+      chinese: w.simplified,
+      pinyin: w.pinyin,
+      pinyinNumber: w.pinyinNumber,
+      english: w.english,
+    }));
+}
+
+// 归一化后比较：汉字、声调数字拼音、带声调拼音三种形式任一正确即算对
+export function checkDictationAnswer(
+  input: string,
+  exercise: Pick<DictationExercise, "chinese" | "pinyin" | "pinyinNumber">,
+): boolean {
+  const normalize = (s: string) => s.toLowerCase().replace(/[\s'’·]/g, "");
+  const answer = normalize(input);
+  if (!answer) return false;
+  return (
+    answer === normalize(exercise.chinese) ||
+    answer === normalize(exercise.pinyinNumber) ||
+    answer === normalize(exercise.pinyin)
+  );
+}
+
 export function buildSpeakingPhrases(
   words: WordInput[],
   extraPhrases: SpeakingPhrase[] = [],

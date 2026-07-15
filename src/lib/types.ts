@@ -20,6 +20,15 @@ export type LessonContent = {
   }>;
 };
 
+// 单道测验题的答题明细（用于课程答题记录）
+export type QuizAnswerDetail = {
+  prompt: string;
+  audioText?: string;
+  correctAnswer: string;
+  userAnswer: string;
+  isCorrect: boolean;
+};
+
 export type PersonPhrases = Array<{
   chinese: string;
   pinyin: string;

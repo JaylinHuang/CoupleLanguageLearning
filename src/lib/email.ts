@@ -48,8 +48,8 @@ export async function notifyLin(
   message: string,
 ): Promise<void> {
   const subjectMap: Record<string, string> = {
-    study_complete: "Erika completed today's study",
-    homework_submitted: "Erika submitted homework",
+    study_complete: "Erika completed today's study", // 已改日报汇总，一般不再触发
+    homework_submitted: "Erika submitted homework", // 已改日报汇总，一般不再触发
     wish_added: "Erika has a new learning wish",
     streak_risk: "Erika might miss her streak today",
   };

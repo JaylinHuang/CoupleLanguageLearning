@@ -32,6 +32,14 @@ export default async function HomeworkPage() {
                   {hw.description ? (
                     <p className="mt-1 text-sm text-warm-gray">{hw.description}</p>
                   ) : null}
+                  {hw.audioPath ? (
+                    <div className="mt-2 rounded-xl bg-blush/30 p-3">
+                      <p className="text-xs font-medium text-coral-dark">
+                        🎧 Voice message from Lin 💕
+                      </p>
+                      <audio src={hw.audioPath} controls className="mt-2 w-full" />
+                    </div>
+                  ) : null}
                   <p className="mt-2 text-xs text-warm-gray">
                     From {hw.assignedBy.displayName} · {hw.status}
                   </p>

@@ -40,41 +40,31 @@ This works like a small app — faster to open every day.
 
 ## Your Daily Plan (~15 minutes)
 
-Lin designed a simple daily routine for you:
+On **Home**, follow **Do this first** (one main task):
 
-| Step | What to do | Time |
-|------|------------|------|
-| 1 | **Review** — practice words you already learned | ~5 min |
-| 2 | **Learn** — do the next lesson | ~5 min |
-| 3 | **Listen** or **Speak** — train your ears and mouth | ~3 min |
-| 4 | *(Optional)* **Chat with Lin AI** — practice a short conversation | ~2 min |
+1. If you have **due reviews** → do **Review** first  
+2. Otherwise → do your **next lesson**  
+3. Optional extras under **Also today** (homework, mistakes, chat, practice)
 
-On the **Home** page, you will see **Today's tasks** — just follow the list!
-
-**Tip:** You have school for many hours without your phone. That is okay! Study when you are free. Your streak counts when you finish your tasks for the day — even if it is in the evening or on weekends.
+**Tip:** You have school for many hours without your phone. That is okay! Study when you are free. Your streak counts when you finish something for the day — even if it is in the evening or on weekends.
 
 ---
 
-## Navigation Menu
+## Navigation
 
-At the top of every page:
+**Bottom bar** (on your phone):
 
-| Menu | What it is |
-|------|------------|
-| **Home** | Your daily plan and progress |
+| Tab | What it is |
+|-----|------------|
+| **Home** | Today's main task and progress |
 | **Learn** | All Chinese lessons |
-| **Review** | Flashcards for words you are learning |
-| **Listen** | Listening quizzes |
-| **Speak** | Repeat after the speaker and record your voice |
-| **Type** | Type pinyin with number tones (e.g. `ni3hao3`) |
-| **Chat** | Talk with AI Lin in Chinese |
-| **Lin** | Phrases Lin often says to you |
-| **Words** | Full word list — mark hard words, send wishes to Lin |
-| **Homework** | Tasks Lin gives you |
-| **Profile** | Your level, XP, and badges |
-| **Culture** | Tips about Chinese family manners |
+| **Review** | Flashcards (spaced repetition) |
+| **Practice** | Practice hub — dictation, writing, roleplay, smart quiz, listen, speak, type, chat… |
+| **Profile** | Level, XP, vocabulary progress, badges |
 
-Some labels also show Tagalog words to help you (e.g. *Matuto* = Learn).
+Other pages (Words, Homework, Lin phrases, Culture, Mistakes) open from Home / Practice / links on the site.
+
+Some labels also show Tagalog (e.g. *Matuto* = Learn).
 
 ---
 
@@ -83,24 +73,21 @@ Some labels also show Tagalog words to help you (e.g. *Matuto* = Learn).
 ### Home
 
 Shows:
-- **Streak** — how many days in a row you studied
-- **Level** — your XP and level
-- **Due reviews** — flashcards waiting for you
-- **Today's tasks** — what to do next
+- **Streak**, **Level**, **Due reviews**, **Today** status
+- **Do this first** — the one main task for today
+- **Also today** — homework, mistakes, chat, next lesson after review
 
 ---
 
 ### Learn (Lessons)
 
-1. Tap **Learn** in the menu
-2. Choose a lesson (start from the top if you are new)
-3. Each lesson has steps:
-   - **Intro** — what you will learn
-   - **Words** — new Chinese characters with pinyin and English
-   - **Sentences** — example sentences (English explanations)
-   - **Typing** — practice typing pinyin
-   - **Quiz** — small test at the end
-4. Tap **Complete Lesson** when you finish
+1. Tap **Learn**
+2. Choose a lesson
+3. Steps: Intro → Words → Sentences → Typing → **Quiz**
+4. In Quiz: answer **one question at a time**, tap **Check** to see if you are right, then continue
+5. When finished, you can open **My Mistakes** if you got something wrong
+
+Wrong answers are saved for you and Lin. Those words also come back sooner in **Review**.
 
 **Lessons include:**
 - Hello & Introduction
@@ -120,122 +107,101 @@ Shows:
    - **Good** — I knew it
    - **Easy** — very easy
 
-Words you mark as **hard** in the Words page will come back more often.
+Works **offline** too — ratings sync when you are back online.
+
+Words you mark as **hard** (or get wrong in a lesson) will come back more often.
 
 ---
 
-### Listen
+### Practice hub
 
-1. Tap **Listen**
-2. Tap **🔊 Listen** to hear Chinese
-3. Choose the correct answer or fill in the blank
-4. Finish all questions to earn XP
+Open **Practice** for:
 
----
-
-### Speak
-
-1. Tap **Speak**
-2. Read the Chinese sentence
-3. Tap **🔊 Listen** to hear the correct pronunciation
-4. Tap **🎤 Record** and say the sentence yourself
-5. Listen to your recording and compare
-6. Tap **Next phrase** until you finish
-
-*The website will ask for microphone permission — please allow it.*
+| Mode | What you do |
+|------|-------------|
+| **Chat with Lin** | Free chat with AI Lin |
+| **Roleplay** | Scenarios: family, video call, restaurant |
+| **Writing Check** | Write Chinese → AI gently corrects you |
+| **Smart Quiz** | Extra questions from your mistakes / hard words |
+| **My Mistakes** | See your wrong answers and the correct ones |
+| **Dictation** | Listen and type hanzi or pinyin |
+| **Handwriting** | Watch stroke order and trace characters |
+| **Listening / Speaking / Typing** | Classic skill drills |
 
 ---
 
-### Type
+### Listen / Speak / Type
 
-1. Tap **Type**
-2. You see a Chinese character and its English meaning
-3. Type the **pinyin with number tones**
-   - Example: 你好 → type `ni3hao3`
-4. Tap **Check**, then **Next**
+Also available inside **Practice**:
+
+- **Listen** — hear Chinese, choose meaning or fill blank  
+- **Speak** — follow along and record yourself (allow microphone)  
+- **Type** — pinyin with number tones (e.g. `ni3hao3`)
+
+Chinese tones use numbers: 1 high, 2 rising, 3 dipping, 4 falling, 5 neutral. Example: 你好 = `ni3hao3`.
 
 ---
 
 ### Chat with Lin AI 💕
 
-1. Tap **Chat**
-2. Lin will greet you in Chinese — he is an AI that talks like your boyfriend
-3. You can type in **English, Tagalog, or Chinese**
-4. Lin will reply gently and help you practice
-5. Try the quick buttons at the bottom for conversation starters
-6. After 3 messages, you earn bonus XP for the day!
+1. Open **Practice** → **Chat with Lin**, or Home → Chat  
+2. Type or use 🎤 voice input (English, Tagalog, or Chinese is OK)  
+3. Ask about words, practice dialogues, or just chat  
+4. After a few messages you can earn bonus XP for the day  
 
-**Tip:** Do not share private information like passwords or bank details in the chat.
+**Tip:** Do not share passwords or bank details in the chat.
 
 ---
 
 ### Lin (People)
 
-See common phrases Lin uses with you:
-- 老婆 (wife — what he calls you)
-- 我很想你 (I miss you a lot)
-- 晚安 (good night)
-- 今天怎么样？ (How was your day?)
-
-Practice these before your video calls!
+See common phrases Lin uses with you (老婆, 我很想你, 晚安…). Practice before video calls!
 
 ---
 
-### Words (Vocabulary)
+### Words & wishes
 
-- Browse all words you are learning
-- Tap **Mark hard** on any word that is difficult — Lin will see this
-- Use **I want to learn about...** to tell Lin what topics you want next  
-  (Example: "ordering food", "meeting your parents")
+1. Browse the word list  
+2. Tap **Mark hard** for difficult words  
+3. Use **I want to learn about...** to send Lin a wish — he gets an **email right away**  
+4. Tap ✍️ on a word to practice handwriting  
 
 ---
 
 ### Homework
 
-When Lin gives you homework:
-
-1. Tap **Homework**
-2. Read Lin's instructions
-3. You can:
-   - Type your answer in the text box, **or**
-   - Tap **🎤 Record voice** to send a voice message, **or**
-   - Do both!
-4. Tap **Submit to Lin**
-5. Wait for Lin's feedback — it will appear on the same page
-
----
-
-### Culture & Etiquette
-
-Short guides to help you when talking to Lin's family:
-- How to address elders (叔叔, 阿姨...)
-- Table manners when eating together
-- How to greet family on video calls
-
-Read these before meeting Lin's parents!
+1. Open **Homework**  
+2. Read Lin’s task — he may leave a **voice message** 🎧  
+3. Reply with text and/or **🎤 Record voice**  
+4. Tap **Submit to Lin**  
+5. Wait for Lin’s feedback on the same page  
 
 ---
 
 ### Profile
 
-See your:
-- **Level** and **XP**
-- **Longest streak**
-- **Achievements** (badges you unlock)
+- Level and XP  
+- Longest streak  
+- **Vocabulary** progress by HSK level  
+- Achievements / badges  
 
-Badges include things like completing your first lesson or practicing Lin's phrases.
+---
+
+### Culture & Etiquette
+
+Short guides about addressing elders, table manners, and meeting family — useful before meeting Lin’s parents.
 
 ---
 
 ## Tips for Success
 
-1. **15 minutes a day** is enough — do not pressure yourself
-2. **School days:** study in the evening or on weekends when you have your phone
-3. **Use Review every day** — it helps you remember words long-term
-4. **Mark hard words** — Lin uses this to help you better
-5. **Send wishes** — tell Lin what you want to learn next
-6. **Practice speaking out loud** — even alone in your room!
-7. **Chat with AI Lin** — low pressure, no judgment
+1. **Do the main task on Home first** every day  
+2. **School days:** study in the evening or on weekends when you have your phone  
+3. Use **Review** when cards are waiting  
+4. After a lesson, check **My Mistakes** if you got questions wrong  
+5. **Mark hard words** and **send wishes** so Lin can help you better  
+6. **Practice speaking out loud** — even alone in your room!  
+7. **Chat with AI Lin** — low pressure, no judgment  
 
 ---
 

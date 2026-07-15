@@ -11,7 +11,9 @@ export function middleware(request: NextRequest) {
     pathname.startsWith("/_next") ||
     pathname.startsWith("/icons") ||
     pathname === "/manifest.json" ||
-    pathname.startsWith("/favicon")
+    pathname.startsWith("/favicon") ||
+    // Vercel Cron 请求不带 session cookie，路由内部用 CRON_SECRET 校验
+    pathname.startsWith("/api/cron")
   ) {
     return NextResponse.next();
   }

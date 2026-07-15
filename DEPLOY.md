@@ -86,8 +86,18 @@ npx vercel --prod
 1. 浏览器打开 Vercel 给的 URL  
 2. Erika 登录：`erika` / 你在 seed 时设的密码  
 3. 你登录：`lin` / 你在 seed 时设的密码  
-4. 让 Erika 完成一节课，检查 `NOTIFY_EMAIL` 是否收到邮件  
-5. 测试 **Chat with Lin AI**（`/practice/ai`）— 应看到流式打字、RAG 命中数、🎤 语音输入、🔊 发音
+4. 让 Erika 完成一节课 — **不会立刻发完课邮件**；可在 Admin → Progress 点「Send daily report now」测日报  
+5. 测试 **Chat with Lin AI**（`/practice/ai`）— 应看到流式打字、RAG 命中  
+6. （可选）在 Words 页提交一条 wish — 应立刻收到许愿邮件  
+
+### 邮件与 Cron（上线后）
+
+| 任务 | 北京时间 | 路径 |
+|------|----------|------|
+| 学习日报 | 每天 23:00 | `/api/cron/daily-report` |
+| 学习周报 | 周日晚 24:00（周一 0:00） | `/api/cron/weekly-report` |
+
+建议在 Vercel 环境变量配置 `CRON_SECRET`。重新部署后 Cron 才会按 `vercel.json` 生效。
 
 ---
 
@@ -162,9 +172,57 @@ git commit -m "Initial commit: Erika Chinese learning app"
 gh repo create ErikasChineseLearning --private --source=. --remote=origin --push
 ```
 
-建议选 **Private** 仓库。推送完成后，在 Vercel → **Add New Project** → 选该 GitHub 仓库，即可实现 `git push` 自动部署。
+建议选 **Private** 仓库。推送完成后，见下方「关联已有 Vercel 项目」。
 
-或：
+---
+
+## 关联已有 Vercel 项目与 GitHub（推荐）
+
+若你之前用 CLI / 网页手动部署过（例如 `jaylin-love-erika.vercel.app`），**不要新建项目**，在现有项目里关联仓库即可；**环境变量会保留**。
+
+### 第 1 步：让 Vercel 能访问 GitHub 仓库
+
+1. 打开 [github.com/settings/installations](https://github.com/settings/installations)  
+2. 找到 **Vercel**，点 **Configure**  
+3. **Repository access** → 选 **Only select repositories**  
+4. 添加 **`JaylinHuang/ErikasChineseLearning`** → **Save**
+
+### 第 2 步：在 Vercel 项目里连接 Git
+
+1. 打开 [vercel.com/dashboard](https://vercel.com/dashboard)  
+2. 进入已有项目（如 **jaylin-love-erika**）  
+3. **Settings** → 左侧 **Git**  
+4. **Connect Git Repository** → 选 **GitHub** → **`JaylinHuang/ErikasChineseLearning`**
+
+### 第 3 步：确认生产分支
+
+本仓库默认分支是 **`master`**（不是 `main`）：
+
+1. 仍在 **Settings → Git**  
+2. **Production Branch** 设为 **`master`**  
+3. 保存
+
+### 第 4 步：触发首次 Git 部署
+
+关联成功后 Vercel 通常会立即部署一次。若没有：
+
+```powershell
+git commit --allow-empty -m "trigger vercel git deploy"
+git push
+```
+
+在 **Deployments** 页应看到来源为 **Git** 的新部署；成功后以后每次 `git push` 都会自动重新部署。
+
+### 常见问题
+
+| 现象 | 处理 |
+|------|------|
+| 列表里找不到仓库 | 回到第 1 步，确认 Vercel GitHub App 已授权该仓库 |
+| 部署失败 Build Error | 检查 Vercel 环境变量是否齐全（见 `.env.example`） |
+| push 了但不部署 | 确认 Production Branch 是 `master`，且 push 的是 `master` 分支 |
+| `vercel login` 在中文 Windows 用户名失败 | 用网页关联即可；CLI 部署可用 `deploy-token.ps1` |
+
+或（不关联 Git，手动部署）：
 
 ```powershell
 npx vercel --prod

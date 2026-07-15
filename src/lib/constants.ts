@@ -15,6 +15,11 @@ export const XP_REWARDS = {
   aiChat: 5,
   homeworkSubmit: 20,
   dailyCheckIn: 10,
+  dictation: 10,
+  smartQuiz: 15,
+  roleplay: 10,
+  writingCheck: 10,
+  handwriting: 10,
 } as const;
 
 export const LEVEL_XP_BASE = 100;

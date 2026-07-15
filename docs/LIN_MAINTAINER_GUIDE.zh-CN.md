@@ -90,10 +90,12 @@ ErikasChineseLearning/
 | 页面 | `/learn` 列表 + `/learn/[lessonId]` 详情 |
 | 课程数据 | `Lesson` 表，`content` 字段存 JSON（介绍、例句、打字题、测验） |
 | 交互 | `LessonPlayer` 客户端组件 — 分步：Intro → Words → Sentences → Typing → Quiz |
-| 完成逻辑 | `completeLessonAction` — 写入进度、加入复习队列、奖励 XP、发邮件通知 |
+| 完成逻辑 | `completeLessonAction` — 写入进度与 `LessonAttempt` 答题明细、错题标 hard 进复习、奖励 XP；**不再即时发邮件**（见日报） |
 | 词课关联 | `LessonWord` 多对多表 |
+| Quiz | 逐题即时反馈（Check → 对错 → 下一题） |
+| 错题本 | Erika 端 `/mistakes`；Admin Progress 可点开历史记录 |
 
-**扩展课程**：Admin 后台添加 shell 课，或编辑 `prisma/seed.ts` 后 `npm run db:seed`
+**扩展课程**：Admin → Lessons → **Edit content** 可视化编辑 intro / 句子 / 打字 / 测验；或 `prisma/seed.ts` 后 `npm run db:seed`
 
 ---
 
@@ -191,9 +193,9 @@ ErikasChineseLearning/
 
 | 管理员端 | 实现 |
 |----------|------|
-| 布置 | `createHomeworkAction` |
+| 布置 | `createHomeworkAction` — 可附带 **Lin 语音留言**（`Homework.audioPath`） |
 | 批改 | `reviewHomeworkAction` — 文字反馈，Erika 端可见 |
-| 通知 | 提交时 `notifyLin` 发邮件到 `NOTIFY_EMAIL` |
+| 通知 | 提交时仅站内通知；**不发即时邮件**，由每天 23:00 日报汇总 |
 
 **Blob 环境变量**：`BLOB_STORE_ID`（Vercel 自动注入）、可选 `BLOB_READ_WRITE_TOKEN`
 
@@ -227,10 +229,38 @@ ErikasChineseLearning/
 | 项目 | 实现 |
 |------|------|
 | 实现 | `src/lib/email.ts` — nodemailer + QQ SMTP |
-| 触发 | 完课、交作业、许愿 |
-| 收件 | `NOTIFY_EMAIL`（2810745803@qq.com） |
+| 收件 | `NOTIFY_EMAIL` |
 
-**相关环境变量**：`SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`
+**何时发邮件（避免打扰）：**
+
+| 类型 | 时机 | 说明 |
+|------|------|------|
+| **学习日报** | 每天 **北京时间 23:00** | Cron `/api/cron/daily-report`；汇总当天完课、错题、复习、写作、作业等；当天无学习则跳过 |
+| **学习周报** | **周日晚上十二点**（北京时间周一 00:00） | Cron `/api/cron/weekly-report`；上一周汇总 + AI 点评 |
+| **学习愿望** | **立刻** | Erika 在 Words 页提交 wish 时 `notifyLin("wish_added")` |
+
+**不再即时发邮件：** 完课、交作业（改走日报）。
+
+**手动测试：** Admin → Progress →「Send daily / weekly report now」
+
+**Cron 环境变量：** 建议配置 `CRON_SECRET`；`vercel.json` 中 schedule 为 UTC（日报 `0 15 * * *`，周报 `0 16 * * 0`）
+
+**SMTP：** `SMTP_HOST`、`SMTP_PORT`、`SMTP_USER`、`SMTP_PASS`
+
+---
+
+### 4.13b 练习中心与其它能力（摘要）
+
+| 路径 | 功能 |
+|------|------|
+| `/practice` | 练习中心入口 |
+| `/dictation` | 听写（汉字或拼音） |
+| `/practice/writing` | AI 语法纠错（归档 `GrammarCorrection`） |
+| `/practice/smart-quiz` | 基于错题/难词的 AI 出题 |
+| `/practice/roleplay` | 角色扮演场景对话 |
+| `/handwriting` | 汉字笔顺（Hanzi Writer） |
+| `/mistakes` | Erika 错题本 |
+| 底栏导航 | Home / Learn / Review / Practice / Profile |
 
 ---
 
@@ -249,10 +279,10 @@ ErikasChineseLearning/
 | 路径 | 功能 |
 |------|------|
 | `/admin` | 仪表盘、通知、快捷入口 |
-| `/admin/lessons` | 创建课程（shell 结构） |
+| `/admin/lessons` | 创建课程 + **Edit content** 可视化编辑器 |
 | `/admin/vocabulary` | 添加词条 |
-| `/admin/homework` | 布置作业、听录音、反馈 |
-| `/admin/progress` | Erika 进度、难词、许愿池 |
+| `/admin/homework` | 布置作业（可录音留言）、听录音、反馈 |
+| `/admin/progress` | 进度、难词、许愿、课程答题历史、写作纠错、手动发日报/周报 |
 
 ---
 
@@ -261,11 +291,12 @@ ErikasChineseLearning/
 核心表：
 
 - `User` / `UserProgress` — 用户与进度
-- `Word` / `Lesson` / `LessonWord` / `LessonProgress` — 词与课
+- `Word` / `Lesson` / `LessonWord` / `LessonProgress` / `LessonAttempt` — 词、课、进度与逐题答题
+- `GrammarCorrection` — AI 写作纠错归档
 - `ReviewCard` — SRS 复习卡
 - `PersonCard` — 人物短语卡
 - `WishItem` — 学习许愿
-- `Homework` / `HomeworkSubmission` — 作业与提交
+- `Homework`（可含 `audioPath` 语音留言）/ `HomeworkSubmission` — 作业与提交
 - `Notification` — 站内通知
 - `Achievement` — 成就徽章
 

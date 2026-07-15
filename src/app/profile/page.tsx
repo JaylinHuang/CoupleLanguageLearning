@@ -1,7 +1,9 @@
 import { requireLearner } from "@/app/actions/auth";
 import { SiteHeader, PageShell, StatCard } from "@/components/layout";
+import { VocabProgress } from "@/components/vocab-progress";
 import { prisma } from "@/lib/db";
 import { xpProgressInLevel, BADGES } from "@/lib/constants";
+import { getVocabStats } from "@/lib/vocab-stats";
 
 export default async function ProfilePage() {
   const user = await requireLearner();
@@ -13,6 +15,8 @@ export default async function ProfilePage() {
   const achievements = await prisma.achievement.findMany({
     where: { userId: user.id },
   });
+
+  const vocabStats = await getVocabStats(user.id);
 
   const unlocked = new Set(achievements.map((a) => a.badgeId));
   const xpInfo = xpProgressInLevel(progress?.xp ?? 0);
@@ -41,6 +45,10 @@ export default async function ProfilePage() {
           <p className="mt-1 text-xs text-warm-gray">
             {xpInfo.current} / {xpInfo.needed} XP to next level
           </p>
+        </div>
+
+        <div className="mt-4">
+          <VocabProgress stats={vocabStats} />
         </div>
 
         <div className="mt-6">

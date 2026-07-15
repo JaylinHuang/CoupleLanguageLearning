@@ -1,9 +1,7 @@
 import { requireAdmin } from "@/app/actions/auth";
 import { SiteHeader, PageShell } from "@/components/layout";
-import {
-  createHomeworkAction,
-  reviewHomeworkAction,
-} from "@/app/actions/learning";
+import { reviewHomeworkAction } from "@/app/actions/learning";
+import { HomeworkAssignForm } from "@/components/homework-assign-form";
 import { prisma } from "@/lib/db";
 
 export default async function AdminHomeworkPage() {
@@ -22,14 +20,7 @@ export default async function AdminHomeworkPage() {
     <>
       <SiteHeader user={admin} admin />
       <PageShell title="Homework" subtitle="Assign tasks and review submissions">
-        <form action={createHomeworkAction} className="card mb-6 space-y-3 p-4">
-          <h2 className="font-medium">Assign homework</h2>
-          <input name="title" className="input" placeholder="Title" required />
-          <textarea name="description" className="input min-h-20" placeholder="Instructions for Erika" />
-          <button type="submit" className="btn-primary">
-            Assign
-          </button>
-        </form>
+        <HomeworkAssignForm />
 
         <div className="space-y-4">
           {homework.map((hw) => (
@@ -37,6 +28,12 @@ export default async function AdminHomeworkPage() {
               <p className="font-medium">{hw.title}</p>
               {hw.description ? (
                 <p className="text-sm text-warm-gray">{hw.description}</p>
+              ) : null}
+              {hw.audioPath ? (
+                <div className="mt-2">
+                  <p className="text-xs text-warm-gray">Your voice message:</p>
+                  <audio src={hw.audioPath} controls className="mt-1 w-full" />
+                </div>
               ) : null}
               <p className="mt-1 text-xs text-warm-gray">Status: {hw.status}</p>
 

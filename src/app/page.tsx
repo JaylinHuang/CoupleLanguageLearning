@@ -37,21 +37,73 @@ export default async function HomePage() {
     },
   });
 
+  // 最近错题数量（供次要任务提示）
+  const recentAttempts = await prisma.lessonAttempt.findMany({
+    where: { userId: user.id },
+    orderBy: { completedAt: "desc" },
+    take: 20,
+    select: { answers: true },
+  });
+  let mistakeCount = 0;
+  for (const a of recentAttempts) {
+    try {
+      const answers = JSON.parse(a.answers) as Array<{ isCorrect: boolean }>;
+      mistakeCount += answers.filter((x) => !x.isCorrect).length;
+    } catch {
+      // 忽略坏数据
+    }
+  }
+
   const xpInfo = xpProgressInLevel(progress?.xp ?? 0);
   const studiedToday =
     progress?.lastStudyDate &&
     isSameDay(startOfDay(progress.lastStudyDate), startOfDay(new Date()));
+
+  // 主任务优先级：到期复习 > 下一课
+  const mainTask =
+    dueReviews > 0
+      ? {
+          href: "/review",
+          title: "Review cards",
+          subtitle: `${dueReviews} cards waiting · ~5 min`,
+          cta: "Start review",
+          badge: "Main task",
+        }
+      : nextLesson
+        ? {
+            href: `/learn/${nextLesson.id}`,
+            title: nextLesson.title,
+            subtitle:
+              nextLesson.description ?? "Continue your next lesson · ~10 min",
+            cta: "Start lesson",
+            badge: nextLesson.sceneTag === "couple" ? "With Lin 💕" : "Main task",
+          }
+        : {
+            href: "/practice",
+            title: "All lessons complete!",
+            subtitle: "Practice what you know, or ask Lin for more content.",
+            cta: "Open Practice",
+            badge: "Main task",
+          };
 
   return (
     <>
       <SiteHeader user={user} />
       <PageShell
         title="Today's Plan"
-        subtitle="~15 minutes · Mag-aral ng ~15 minuto"
+        subtitle="One main task · Mag-focus sa isang gawain"
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Streak" value={`${progress?.streak ?? 0} days`} hint="Keep going!" />
-          <StatCard label="Level" value={xpInfo.level} hint={`${xpInfo.current}/${xpInfo.needed} XP`} />
+          <StatCard
+            label="Streak"
+            value={`${progress?.streak ?? 0} days`}
+            hint="Keep going!"
+          />
+          <StatCard
+            label="Level"
+            value={xpInfo.level}
+            hint={`${xpInfo.current}/${xpInfo.needed} XP`}
+          />
           <StatCard label="Due reviews" value={dueReviews} />
           <StatCard
             label="Today"
@@ -60,69 +112,80 @@ export default async function HomePage() {
           />
         </div>
 
-        <div className="mt-6 space-y-3">
-          <h2 className="text-lg font-medium text-warm-brown">Today&apos;s tasks</h2>
+        <div className="mt-6">
+          <h2 className="mb-3 text-lg font-medium text-warm-brown">
+            Do this first
+          </h2>
+          <Link
+            href={mainTask.href}
+            className="card block border-coral/40 bg-gradient-to-br from-white to-blush/40 p-5 transition hover:shadow-md"
+          >
+            <span className="badge mb-2">{mainTask.badge}</span>
+            <p className="text-xl font-semibold text-warm-brown">
+              {mainTask.title}
+            </p>
+            <p className="mt-1 text-sm text-warm-gray">{mainTask.subtitle}</p>
+            <span className="btn-primary mt-4 inline-flex">{mainTask.cta}</span>
+          </Link>
+        </div>
 
-          {dueReviews > 0 ? (
-            <Link href="/review" className="card block p-4 transition hover:shadow-md">
-              <p className="font-medium">Review cards</p>
-              <p className="text-sm text-warm-gray">{dueReviews} cards waiting</p>
+        <div className="mt-6 space-y-3">
+          <h2 className="text-lg font-medium text-warm-brown">Also today</h2>
+
+          {openHomework > 0 ? (
+            <Link
+              href="/homework"
+              className="card block p-4 transition hover:shadow-md"
+            >
+              <p className="font-medium">Homework from Lin</p>
+              <p className="text-sm text-warm-gray">
+                {openHomework} pending · Takdang-aralin
+              </p>
             </Link>
           ) : null}
 
-          {nextLesson ? (
+          {mistakeCount > 0 ? (
+            <Link
+              href="/mistakes"
+              className="card block p-4 transition hover:shadow-md"
+            >
+              <p className="font-medium">Review my mistakes</p>
+              <p className="text-sm text-warm-gray">
+                {mistakeCount} recent wrong answers · Mga mali
+              </p>
+            </Link>
+          ) : null}
+
+          {dueReviews === 0 && nextLesson ? (
+            <Link
+              href="/practice"
+              className="card block p-4 transition hover:shadow-md"
+            >
+              <p className="font-medium">Extra practice</p>
+              <p className="text-sm text-warm-gray">
+                Dictation · Roleplay · Writing · Smart Quiz
+              </p>
+            </Link>
+          ) : null}
+
+          {dueReviews > 0 && nextLesson ? (
             <Link
               href={`/learn/${nextLesson.id}`}
               className="card block p-4 transition hover:shadow-md"
             >
-              <p className="font-medium">{nextLesson.title}</p>
-              <p className="text-sm text-warm-gray">{nextLesson.description}</p>
-              {nextLesson.sceneTag === "couple" ? (
-                <span className="badge mt-2">With Lin 💕</span>
-              ) : null}
-            </Link>
-          ) : (
-            <div className="card p-4">
-              <p className="font-medium">All lessons complete!</p>
-              <p className="text-sm text-warm-gray">Ask Lin for more content.</p>
-            </div>
-          )}
-
-          {openHomework > 0 ? (
-            <Link href="/homework" className="card block p-4 transition hover:shadow-md">
-              <p className="font-medium">Homework from Lin</p>
-              <p className="text-sm text-warm-gray">{openHomework} pending</p>
+              <p className="font-medium">After review: {nextLesson.title}</p>
+              <p className="text-sm text-warm-gray">
+                {nextLesson.description ?? "Your next lesson"}
+              </p>
             </Link>
           ) : null}
 
-          <Link href="/people" className="card block p-4 transition hover:shadow-md">
-            <p className="font-medium">Practice with Lin&apos;s phrases</p>
-            <p className="text-sm text-warm-gray">See what he usually says</p>
-          </Link>
-
-          <Link href="/listening" className="card block p-4 transition hover:shadow-md">
-            <p className="font-medium">Listening quiz</p>
-            <p className="text-sm text-warm-gray">听中文选意思 · ~5 min</p>
-          </Link>
-
-          <Link href="/speaking" className="card block p-4 transition hover:shadow-md">
-            <p className="font-medium">Speaking practice</p>
-            <p className="text-sm text-warm-gray">跟读 + 录音对比</p>
-          </Link>
-
-          <Link href="/typing" className="card block p-4 transition hover:shadow-md">
-            <p className="font-medium">Typing practice</p>
-            <p className="text-sm text-warm-gray">Pinyin with number tones</p>
-          </Link>
-
-          <Link href="/practice/ai" className="card block p-4 transition hover:shadow-md">
+          <Link
+            href="/practice/ai"
+            className="card block p-4 transition hover:shadow-md"
+          >
             <p className="font-medium">Chat with Lin AI 💕</p>
             <p className="text-sm text-warm-gray">Relaxed Mandarin conversation</p>
-          </Link>
-
-          <Link href="/culture" className="card block p-4 transition hover:shadow-md">
-            <p className="font-medium">Culture & etiquette</p>
-            <p className="text-sm text-warm-gray">Meeting family · table manners</p>
           </Link>
         </div>
       </PageShell>

@@ -30,13 +30,25 @@ export default async function AdminLessonsPage() {
 
         <div className="space-y-2">
           {lessons.map((l) => (
-            <div key={l.id} className="card p-4">
-              <p className="font-medium">{l.title}</p>
-              <p className="text-sm text-warm-gray">{l.description}</p>
-              <p className="mt-1 text-xs text-warm-gray">
-                HSK {l.hskLevel} · {l.sceneTag ?? "general"} · {l._count.words} words ·{" "}
-                {l.published ? "published" : "draft"}
-              </p>
+            <div
+              key={l.id}
+              className="card flex flex-wrap items-center justify-between gap-3 p-4"
+            >
+              <div>
+                <p className="font-medium">{l.title}</p>
+                <p className="text-sm text-warm-gray">{l.description}</p>
+                <p className="mt-1 text-xs text-warm-gray">
+                  HSK {l.hskLevel} · {l.sceneTag ?? "general"} ·{" "}
+                  {l._count.words} words ·{" "}
+                  {l.published ? "published" : "draft"}
+                </p>
+              </div>
+              <a
+                href={`/admin/lessons/${l.id}/edit`}
+                className="btn-primary shrink-0 text-sm"
+              >
+                Edit content
+              </a>
             </div>
           ))}
         </div>

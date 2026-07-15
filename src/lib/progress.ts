@@ -88,4 +88,25 @@ export async function addWordsToReview(userId: string, wordIds: string[]) {
   }
 }
 
+// 错题关联的词：标为 hard 并立刻到期，进入下次复习队列
+export async function markWordsHardDue(userId: string, wordIds: string[]) {
+  const unique = [...new Set(wordIds.filter(Boolean))];
+  for (const wordId of unique) {
+    await prisma.reviewCard.upsert({
+      where: { userId_wordId: { userId, wordId } },
+      create: {
+        userId,
+        wordId,
+        markedHard: true,
+        interval: 0,
+        dueDate: new Date(),
+      },
+      update: {
+        markedHard: true,
+        dueDate: new Date(),
+      },
+    });
+  }
+}
+
 export { xpForLevel, calculateLevel };

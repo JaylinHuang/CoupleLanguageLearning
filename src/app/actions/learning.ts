@@ -6,6 +6,7 @@ import {
   awardXp,
   recordStudyDay,
   addWordsToReview,
+  markWordsHardDue,
   unlockBadge,
   createNotification,
 } from "@/lib/progress";
@@ -13,15 +14,30 @@ import { XP_REWARDS } from "@/lib/constants";
 import { notifyLin } from "@/lib/email";
 import { requireLearner, requireAdmin } from "./auth";
 import { sm2, type ReviewQuality } from "@/lib/srs";
+import type { QuizAnswerDetail, LessonContent } from "@/lib/types";
 
-export async function completeLessonAction(lessonId: string, score: number) {
+export async function completeLessonAction(
+  lessonId: string,
+  score: number,
+  answers?: QuizAnswerDetail[],
+) {
   const user = await requireLearner();
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonId },
-    include: { words: true },
+    include: { words: { include: { word: true } } },
   });
   if (!lesson) throw new Error("Lesson not found");
+
+  // 每次完成都单独存一条答题记录，保留全部历史供 Lin / Erika 查看错题
+  await prisma.lessonAttempt.create({
+    data: {
+      userId: user.id,
+      lessonId,
+      score,
+      answers: JSON.stringify(answers ?? []),
+    },
+  });
 
   await prisma.lessonProgress.upsert({
     where: { userId_lessonId: { userId: user.id, lessonId } },
@@ -43,6 +59,37 @@ export async function completeLessonAction(lessonId: string, score: number) {
     user.id,
     lesson.words.map((w) => w.wordId),
   );
+
+  // 错题 → 关联本课词汇并立刻进入复习（标 hard）
+  if (answers?.some((a) => !a.isCorrect)) {
+    const lessonWords = lesson.words.map((lw) => lw.word);
+    const hardIds = new Set<string>();
+    for (const ans of answers) {
+      if (ans.isCorrect) continue;
+      const haystacks = [
+        ans.audioText ?? "",
+        ans.correctAnswer,
+        ans.prompt,
+      ].map((s) => s.toLowerCase());
+      for (const w of lessonWords) {
+        const hit =
+          haystacks.some(
+            (h) =>
+              h.includes(w.simplified.toLowerCase()) ||
+              h.includes(w.english.toLowerCase()) ||
+              w.english.toLowerCase() === ans.correctAnswer.toLowerCase() ||
+              w.simplified === ans.correctAnswer,
+          );
+        if (hit) hardIds.add(w.id);
+      }
+    }
+    // 匹配不到具体词时，把本课全部词标 hard，避免错题丢失
+    if (hardIds.size === 0) {
+      for (const w of lessonWords) hardIds.add(w.id);
+    }
+    await markWordsHardDue(user.id, [...hardIds]);
+  }
+
   await awardXp(user.id, XP_REWARDS.lessonComplete);
   await recordStudyDay(user.id);
 
@@ -63,14 +110,14 @@ export async function completeLessonAction(lessonId: string, score: number) {
     );
   }
 
-  await notifyLin(
-    "study_complete",
-    `Erika completed lesson "${lesson.title}" with score ${score}%.\n\nJaylin_love_Erika`,
-  );
+  // 不再每次学完就发邮件，改由每天 23:00 日报统一汇总
 
   revalidatePath("/");
   revalidatePath("/learn");
+  revalidatePath("/review");
+  revalidatePath("/mistakes");
   revalidatePath("/admin");
+  revalidatePath("/admin/progress");
 }
 
 export async function reviewWordAction(cardId: string, quality: ReviewQuality) {
@@ -193,10 +240,7 @@ export async function submitHomeworkAction(formData: FormData) {
     );
   }
 
-  await notifyLin(
-    "homework_submitted",
-    `Erika submitted homework: "${homework?.title ?? homeworkId}"${audioPath ? " (with voice recording)" : ""}\n\nJaylin_love_Erika`,
-  );
+  // 交作业不再立刻发邮件，改由每天 23:00 日报汇总
 
   revalidatePath("/homework");
   revalidatePath("/admin/homework");
@@ -206,6 +250,7 @@ export async function createHomeworkAction(formData: FormData) {
   const admin = await requireAdmin();
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  const audioPath = String(formData.get("audioPath") ?? "").trim() || null;
   if (!title) return;
 
   await prisma.homework.create({
@@ -213,6 +258,7 @@ export async function createHomeworkAction(formData: FormData) {
       assignedById: admin.id,
       title,
       description: description || null,
+      audioPath, // Lin 的语音留言
       payload: JSON.stringify({ type: "general" }),
     },
   });
@@ -293,7 +339,7 @@ export async function createLessonAction(formData: FormData) {
       sceneTag: String(formData.get("sceneTag") ?? "").trim() || null,
       order: (maxOrder._max.order ?? 0) + 1,
       content: JSON.stringify({
-        intro: "New lesson — add content via admin later.",
+        intro: "New lesson — open the editor to add content.",
         sentences: [],
         typingPrompts: [],
         quiz: [],
@@ -303,6 +349,50 @@ export async function createLessonAction(formData: FormData) {
 
   revalidatePath("/admin/lessons");
   revalidatePath("/learn");
+}
+
+// 更新课程元信息（标题、描述、发布状态等）
+export async function updateLessonMetaAction(
+  lessonId: string,
+  data: {
+    title: string;
+    description: string;
+    hskLevel: number;
+    sceneTag: string;
+    published: boolean;
+  },
+) {
+  await requireAdmin();
+  await prisma.lesson.update({
+    where: { id: lessonId },
+    data: {
+      title: data.title.trim(),
+      description: data.description.trim() || null,
+      hskLevel: data.hskLevel,
+      sceneTag: data.sceneTag.trim() || null,
+      published: data.published,
+    },
+  });
+  revalidatePath("/admin/lessons");
+  revalidatePath(`/admin/lessons/${lessonId}/edit`);
+  revalidatePath("/learn");
+  revalidatePath(`/learn/${lessonId}`);
+}
+
+// 保存课程内容 JSON（intro / sentences / typing / quiz）
+export async function updateLessonContentAction(
+  lessonId: string,
+  content: LessonContent,
+) {
+  await requireAdmin();
+  await prisma.lesson.update({
+    where: { id: lessonId },
+    data: { content: JSON.stringify(content) },
+  });
+  revalidatePath("/admin/lessons");
+  revalidatePath(`/admin/lessons/${lessonId}/edit`);
+  revalidatePath("/learn");
+  revalidatePath(`/learn/${lessonId}`);
 }
 
 export async function completeListeningAction(score: number) {
@@ -332,6 +422,52 @@ export async function completeTypingAction(score: number) {
   revalidatePath("/");
   revalidatePath("/typing");
   return { score };
+}
+
+export async function completeDictationAction(score: number) {
+  const user = await requireLearner();
+  await awardXp(user.id, XP_REWARDS.dictation);
+  await recordStudyDay(user.id);
+  revalidatePath("/");
+  revalidatePath("/dictation");
+  return { score };
+}
+
+export async function completeSmartQuizAction(score: number) {
+  const user = await requireLearner();
+  await awardXp(user.id, XP_REWARDS.smartQuiz);
+  await recordStudyDay(user.id);
+  revalidatePath("/");
+  return { score };
+}
+
+export async function completeRoleplayAction() {
+  const user = await requireLearner();
+  await awardXp(user.id, XP_REWARDS.roleplay);
+  await recordStudyDay(user.id);
+  revalidatePath("/");
+}
+
+export async function completeHandwritingAction() {
+  const user = await requireLearner();
+  await awardXp(user.id, XP_REWARDS.handwriting);
+  await recordStudyDay(user.id);
+  revalidatePath("/");
+}
+
+// Lin 在管理后台手动触发日报 / 周报（用于测试）
+export async function sendDailyReportAction() {
+  await requireAdmin();
+  const { generateAndSendDailyReport } = await import("@/lib/daily-report");
+  await generateAndSendDailyReport();
+  revalidatePath("/admin/progress");
+}
+
+export async function sendWeeklyReportAction() {
+  await requireAdmin();
+  const { generateAndSendWeeklyReport } = await import("@/lib/weekly-report");
+  await generateAndSendWeeklyReport();
+  revalidatePath("/admin/progress");
 }
 
 let aiChatAwarded = new Set<string>();

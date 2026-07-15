@@ -39,12 +39,21 @@ export function VocabularyClient({ words }: { words: WordRow[] }) {
               <p className="text-sm text-warm-gray">{w.english}</p>
               {w.isCustom ? <span className="badge mt-1">Custom</span> : null}
             </div>
-            <form action={markWordHardFormAction}>
-              <input type="hidden" name="wordId" value={w.id} />
-              <button type="submit" className="btn-secondary text-xs">
-                {w.markedHard ? "Hard ✓" : "Mark hard"}
-              </button>
-            </form>
+            <div className="flex shrink-0 items-center gap-2">
+              <a
+                href={`/handwriting?char=${encodeURIComponent(w.simplified)}`}
+                className="btn-secondary text-xs"
+                title="Practice stroke order"
+              >
+                ✍️
+              </a>
+              <form action={markWordHardFormAction}>
+                <input type="hidden" name="wordId" value={w.id} />
+                <button type="submit" className="btn-secondary text-xs">
+                  {w.markedHard ? "Hard ✓" : "Mark hard"}
+                </button>
+              </form>
+            </div>
           </div>
         ))}
       </div>
