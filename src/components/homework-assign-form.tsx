@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { createHomeworkAction } from "@/app/actions/learning";
 
-// Lin 布置作业的表单：支持附带语音留言
+// Tutor 布置作业的表单：支持附带语音留言
 export function HomeworkAssignForm() {
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -80,7 +80,7 @@ export function HomeworkAssignForm() {
       <textarea
         name="description"
         className="input min-h-20"
-        placeholder="Instructions for Erika"
+        placeholder="Instructions for learner"
       />
 
       <div className="flex flex-wrap items-center gap-2">

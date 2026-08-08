@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form";
+import { siteName, siteTagline } from "@/lib/branding";
 
 export default async function LoginPage({
   searchParams,
@@ -6,7 +7,7 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Jaylin_love_Erika";
+  const name = siteName();
 
   const errorMessage =
     error === "invalid"
@@ -21,10 +22,10 @@ export default async function LoginPage({
         <div className="text-center">
           <p className="text-3xl">💕</p>
           <h1 className="mt-2 text-2xl font-semibold text-warm-brown">
-            {siteName}
+            {name}
           </h1>
           <p className="mt-2 text-sm text-warm-gray">
-            Erika&apos;s private Chinese learning site
+            {siteTagline()}
           </p>
           <p className="mt-1 text-xs text-warm-gray">
             Pribadong pag-aaral ng Chinese

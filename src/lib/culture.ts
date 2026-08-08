@@ -17,7 +17,7 @@ export const cultureArticles: CultureArticle[] = [
   {
     id: "addressing-elders",
     title: "Addressing Elders",
-    subtitle: "How to call Lin's family politely",
+    subtitle: "How to call your partner's family politely",
     sections: [
       {
         heading: "Why it matters",
@@ -25,7 +25,7 @@ export const cultureArticles: CultureArticle[] = [
       },
       {
         heading: "Key titles",
-        body: "Learn these before meeting Lin's parents:",
+        body: "Learn these before meeting your partner's parents:",
         phrases: [
           { chinese: "叔叔", pinyin: "shūshu", english: "uncle (father's younger brother; polite for men)" },
           { chinese: "阿姨", pinyin: "āyí", english: "aunt (polite for women)" },
@@ -34,8 +34,8 @@ export const cultureArticles: CultureArticle[] = [
         ],
       },
       {
-        heading: "Tip from Lin",
-        body: "When unsure, Lin's parents can tell you what to call them. A warm 你好 and a smile go a long way!",
+        heading: "Tip from your tutor",
+        body: "When unsure, your partner's parents can tell you what to call them. A warm 你好 and a smile go a long way!",
       },
     ],
   },
@@ -66,7 +66,7 @@ export const cultureArticles: CultureArticle[] = [
   },
   {
     id: "meeting-family",
-    title: "Meeting Lin's Family",
+    title: "Meeting the Family",
     subtitle: "First impressions on video or in person",
     sections: [
       {
@@ -80,7 +80,7 @@ export const cultureArticles: CultureArticle[] = [
       },
       {
         heading: "Long-distance",
-        body: "You and Lin are far apart — family may ask about Philippines life. Short, honest answers in simple Chinese are perfect.",
+        body: "If you and your partner are far apart, family may ask about your daily life. Short, honest answers in simple Chinese are perfect.",
       },
     ],
   },

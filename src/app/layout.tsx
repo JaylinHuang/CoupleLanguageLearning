@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 import { PwaRegister } from "@/components/pwa-register";
+import { siteName, siteTagline } from "@/lib/branding";
 import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_SC } from "next/font/google";
 const inter = Inter({
@@ -13,19 +14,19 @@ const notoSansSc = Noto_Sans_SC({
   variable: "--font-noto-sc",
 });
 
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Jaylin_love_Erika";
+const name = siteName();
 
 export const metadata: Metadata = {
   title: {
-    default: siteName,
-    template: `%s · ${siteName}`,
+    default: name,
+    template: `%s · ${name}`,
   },
-  description: "A private Chinese learning site for Erika — Jaylin_love_Erika",
+  description: siteTagline(),
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: siteName,
+    title: name,
   },
 };
 

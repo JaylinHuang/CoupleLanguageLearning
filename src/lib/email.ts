@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { mailFromName, mailSubjectPrefix } from "@/lib/branding";
 
 type SendMailOptions = {
   subject: string;
@@ -33,7 +34,7 @@ export async function sendNotificationEmail(
   });
 
   await transporter.sendMail({
-    from: `"Jaylin_love_Erika" <${process.env.SMTP_USER}>`,
+    from: `"${mailFromName()}" <${process.env.SMTP_USER}>`,
     to: process.env.NOTIFY_EMAIL,
     subject: options.subject,
     text: options.text,
@@ -43,19 +44,22 @@ export async function sendNotificationEmail(
   return true;
 }
 
-export async function notifyLin(
+export async function notifyTutor(
   type: string,
   message: string,
 ): Promise<void> {
   const subjectMap: Record<string, string> = {
-    study_complete: "Erika completed today's study", // 已改日报汇总，一般不再触发
-    homework_submitted: "Erika submitted homework", // 已改日报汇总，一般不再触发
-    wish_added: "Erika has a new learning wish",
-    streak_risk: "Erika might miss her streak today",
+    study_complete: "Learner completed today's study",
+    homework_submitted: "Learner submitted homework",
+    wish_added: "Learner has a new learning wish",
+    streak_risk: "Learner might miss their streak today",
   };
 
   await sendNotificationEmail({
-    subject: `[Jaylin_love_Erika] ${subjectMap[type] ?? "Update"}`,
+    subject: `${mailSubjectPrefix()} ${subjectMap[type] ?? "Update"}`,
     text: message,
   });
 }
+
+/** @deprecated 使用 notifyTutor */
+export const notifyLin = notifyTutor;

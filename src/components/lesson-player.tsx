@@ -103,7 +103,7 @@ export function LessonPlayer({
           Score {score}% · {correct}/{details.length || 0} correct
         </p>
         <p className="text-sm text-warm-gray">
-          Great job, Erika. Lin is proud of you.
+          Great job!
         </p>
         {wrong.length > 0 ? (
           <a href="/mistakes" className="btn-secondary inline-flex">

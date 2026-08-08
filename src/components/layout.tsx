@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { logoutAction } from "@/app/actions/auth";
 import { BottomNav } from "@/components/bottom-nav";
+import { siteName } from "@/lib/branding";
 import type { SessionUser } from "@/lib/constants";
 
 export function SiteHeader({
@@ -18,7 +19,7 @@ export function SiteHeader({
     { href: "/admin/progress", label: "Progress" },
   ];
 
-  const siteName = process.env.NEXT_PUBLIC_SITE_NAME ?? "Jaylin_love_Erika";
+  const name = siteName();
 
   return (
     <>
@@ -26,10 +27,10 @@ export function SiteHeader({
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
           <Link href={admin ? "/admin" : "/"} className="min-w-0">
             <p className="truncate text-sm font-semibold text-coral-dark">
-              {siteName}
+              {name}
             </p>
             <p className="truncate text-xs text-warm-gray">
-              {admin ? "Admin · Lin" : `Hi, ${user.displayName}`}
+              {admin ? "Tutor" : `Hi, ${user.displayName}`}
             </p>
           </Link>
           <form action={logoutAction}>

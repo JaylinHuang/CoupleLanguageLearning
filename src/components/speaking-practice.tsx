@@ -34,7 +34,7 @@ export function SpeakingPractice({ phrases }: { phrases: SpeakingPhrase[] }) {
           Speaking practice done!
         </p>
         <p className="mt-1 text-sm text-warm-gray">
-          You practiced {practiced.size} phrases. Lin would love to hear you!
+          You practiced {practiced.size} phrases. Your partner would love to hear you!
         </p>
         <a href="/" className="btn-primary mt-4 inline-flex">
           Back to Home

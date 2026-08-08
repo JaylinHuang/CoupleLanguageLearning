@@ -7,7 +7,7 @@ export type VocabLevelStat = {
   mastered: number; // 已掌握（间隔 >= 21 天或复习次数 >= 4，同 Anki 成熟卡标准）
 };
 
-// 按 HSK 等级统计 Erika 的词汇掌握情况（Profile 和 Admin Progress 共用）
+// 按 HSK 等级统计 learner 的词汇掌握情况（Profile 和 Tutor Progress 共用）
 export async function getVocabStats(userId: string): Promise<VocabLevelStat[]> {
   const totals = await prisma.word.groupBy({
     by: ["hskLevel"],
@@ -15,7 +15,7 @@ export async function getVocabStats(userId: string): Promise<VocabLevelStat[]> {
   });
 
   const cards = await prisma.reviewCard.findMany({
-    where: { userId },
+    where: { userId, wordId: { not: null } },
     select: {
       interval: true,
       repetitions: true,
@@ -25,6 +25,7 @@ export async function getVocabStats(userId: string): Promise<VocabLevelStat[]> {
 
   const byLevel = new Map<number, { learning: number; mastered: number }>();
   for (const card of cards) {
+    if (!card.word) continue;
     const level = card.word.hskLevel;
     const entry = byLevel.get(level) ?? { learning: 0, mastered: 0 };
     if (card.interval >= 21 || card.repetitions >= 4) {

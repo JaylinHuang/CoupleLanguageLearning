@@ -13,7 +13,7 @@ type HistoryItem = { input: string; result: CheckResult };
 
 const PROMPTS = [
   "Write about your day 今天",
-  "Tell Lin what you ate 吃",
+  "Tell your tutor what you ate 吃",
   "Say what you want to do 想",
 ];
 
@@ -54,7 +54,7 @@ export function WritingCheck() {
       <div className="card space-y-3 p-5">
         <p className="text-sm text-warm-gray">
           Write 1-2 sentences in Chinese. The AI teacher will check them and
-          Lin can see your practice too. +10 XP each check!
+          your tutor can see your practice too. +10 XP each check!
         </p>
         <div className="flex flex-wrap gap-2">
           {PROMPTS.map((p) => (

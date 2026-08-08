@@ -1,11 +1,14 @@
-export type UserRole = "LEARNER" | "ADMIN";
-
-export type SessionUser = {
-  id: string;
-  username: string;
-  displayName: string;
-  role: UserRole;
-};
+export type {
+  LegacyUserRole as UserRole,
+  SessionUser,
+  PlatformRole,
+  CoupleMemberRole,
+} from "./platform";
+export {
+  COUPLE_STATUS,
+  COURSE_VISIBILITY,
+  KNOWLEDGE_SCOPE,
+} from "./platform";
 
 export const XP_REWARDS = {
   lessonComplete: 25,
@@ -60,6 +63,6 @@ export function xpProgressInLevel(xp: number): {
 export const BADGES = [
   { id: "first_lesson", name: "First Step", description: "Complete your first lesson" },
   { id: "streak_7", name: "Week of Love", description: "7-day study streak" },
-  { id: "lin_phrases", name: "Lin's Words", description: "Learn 10 couple phrases" },
+  { id: "couple_phrases", name: "Couple Phrases", description: "Learn 10 couple phrases" },
   { id: "hsk1_30", name: "HSK1 Explorer", description: "30% of HSK1 vocabulary" },
 ] as const;

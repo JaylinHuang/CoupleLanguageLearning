@@ -1,8 +1,8 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import type { SessionUser, UserRole } from "./constants";
+import type { SessionUser } from "./platform";
 
-const COOKIE_NAME = "erika_session";
+const COOKIE_NAME = "couple_session";
 
 function getSecret() {
   const secret = process.env.SESSION_SECRET;
@@ -18,6 +18,11 @@ export async function createSessionToken(user: SessionUser): Promise<string> {
     username: user.username,
     displayName: user.displayName,
     role: user.role,
+    email: user.email ?? null,
+    platformRole: user.platformRole,
+    coupleId: user.coupleId ?? null,
+    coupleRole: user.coupleRole ?? null,
+    coupleStatus: user.coupleStatus ?? null,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -34,7 +39,15 @@ export async function verifySessionToken(
       id: payload.id as string,
       username: payload.username as string,
       displayName: payload.displayName as string,
-      role: payload.role as UserRole,
+      role: payload.role as SessionUser["role"],
+      email: (payload.email as string | null | undefined) ?? null,
+      platformRole:
+        (payload.platformRole as SessionUser["platformRole"]) ?? "MEMBER",
+      coupleId: (payload.coupleId as string | null | undefined) ?? null,
+      coupleRole:
+        (payload.coupleRole as SessionUser["coupleRole"]) ?? null,
+      coupleStatus:
+        (payload.coupleStatus as string | null | undefined) ?? null,
     };
   } catch {
     return null;

@@ -171,7 +171,7 @@ export function LessonEditor({
                 setMeta({ ...meta, published: e.target.checked })
               }
             />
-            Published (visible to Erika)
+            Published (visible to learner)
           </label>
         </div>
       ) : null}

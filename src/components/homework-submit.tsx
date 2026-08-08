@@ -103,7 +103,7 @@ export function HomeworkSubmitForm({
       {error ? <p className="text-sm text-china-red">{error}</p> : null}
 
       <button type="submit" className="btn-primary" disabled={submitting}>
-        {submitting ? "Submitting..." : "Submit to Lin"}
+        {submitting ? "Submitting..." : "Submit to tutor"}
       </button>
     </form>
   );

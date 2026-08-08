@@ -2,25 +2,33 @@ import Link from "next/link";
 import { requireAdmin } from "@/app/actions/auth";
 import { SiteHeader, PageShell, StatCard } from "@/components/layout";
 import { prisma } from "@/lib/db";
+import { getCoupleLearnerUserId } from "@/lib/couple";
 import { isSameDay, startOfDay } from "@/lib/srs";
 
 export default async function AdminDashboard() {
   const admin = await requireAdmin();
 
-  const erika = await prisma.user.findUnique({
-    where: { username: "erika" },
-    include: { progress: true },
-  });
+  const learnerId = admin.coupleId
+    ? await getCoupleLearnerUserId(admin.coupleId)
+    : (
+        await prisma.user.findFirst({ where: { role: "LEARNER" } })
+      )?.id;
+  const learner = learnerId
+    ? await prisma.user.findUnique({
+        where: { id: learnerId },
+        include: { progress: true },
+      })
+    : null;
 
-  const dueReviews = erika
+  const dueReviews = learner
     ? await prisma.reviewCard.count({
-        where: { userId: erika.id, dueDate: { lte: new Date() } },
+        where: { userId: learner.id, dueDate: { lte: new Date() } },
       })
     : 0;
 
-  const completedLessons = erika
+  const completedLessons = learner
     ? await prisma.lessonProgress.count({
-        where: { userId: erika.id, status: "COMPLETED" },
+        where: { userId: learner.id, status: "COMPLETED" },
       })
     : 0;
 
@@ -28,9 +36,9 @@ export default async function AdminDashboard() {
     where: { status: "OPEN" },
   });
 
-  const hardWords = erika
+  const hardWords = learner
     ? await prisma.reviewCard.count({
-        where: { userId: erika.id, markedHard: true },
+        where: { userId: learner.id, markedHard: true },
       })
     : 0;
 
@@ -39,9 +47,9 @@ export default async function AdminDashboard() {
   });
 
   const studiedToday =
-    erika?.progress?.lastStudyDate &&
+    learner?.progress?.lastStudyDate &&
     isSameDay(
-      startOfDay(erika.progress.lastStudyDate),
+      startOfDay(learner.progress.lastStudyDate),
       startOfDay(new Date()),
     );
 
@@ -51,17 +59,22 @@ export default async function AdminDashboard() {
     take: 10,
   });
 
+  const learnerLabel = learner?.displayName ?? "Learner";
+
   return (
     <>
       <SiteHeader user={admin} admin />
-      <PageShell title="Admin Dashboard" subtitle="Erika's learning overview">
+      <PageShell
+        title="Tutor Dashboard"
+        subtitle={`${learnerLabel}'s learning overview`}
+      >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            label="Erika today"
+            label={`${learnerLabel} today`}
             value={studiedToday ? "Studied ✓" : "Not yet"}
           />
-          <StatCard label="Streak" value={`${erika?.progress?.streak ?? 0} days`} />
-          <StatCard label="Level" value={erika?.progress?.level ?? 1} />
+          <StatCard label="Streak" value={`${learner?.progress?.streak ?? 0} days`} />
+          <StatCard label="Level" value={learner?.progress?.level ?? 1} />
           <StatCard label="Unread alerts" value={unreadNotifications} />
         </div>
 
@@ -79,30 +92,28 @@ export default async function AdminDashboard() {
                 Manage lessons
               </Link>
               <Link href="/admin/vocabulary" className="btn-secondary">
-                Add words
+                Vocabulary
               </Link>
               <Link href="/admin/homework" className="btn-secondary">
                 Homework
               </Link>
               <Link href="/admin/progress" className="btn-secondary">
-                Progress & wishes ({openWishes})
+                Progress
               </Link>
             </div>
+            <p className="mt-3 text-xs text-warm-gray">Open wishes: {openWishes}</p>
           </div>
 
           <div className="card p-4">
             <h2 className="font-medium text-warm-brown">Recent notifications</h2>
-            <ul className="mt-3 space-y-2">
+            <ul className="mt-3 space-y-2 text-sm">
               {notifications.length === 0 ? (
-                <li className="text-sm text-warm-gray">No notifications yet.</li>
+                <li className="text-warm-gray">No notifications yet.</li>
               ) : (
                 notifications.map((n) => (
-                  <li key={n.id} className="border-b border-blush/40 pb-2 text-sm">
-                    <p className="font-medium">{n.title}</p>
+                  <li key={n.id} className="border-b border-blush/40 pb-2">
+                    <p className="font-medium text-warm-brown">{n.title}</p>
                     <p className="text-warm-gray">{n.message}</p>
-                    <p className="text-xs text-warm-gray">
-                      {n.createdAt.toLocaleString()}
-                    </p>
                   </li>
                 ))
               )}

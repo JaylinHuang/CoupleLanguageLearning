@@ -13,13 +13,15 @@ export default async function HandwritingPage({
 
   // 优先练她的难词和复习词
   const cards = await prisma.reviewCard.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, wordId: { not: null } },
     include: { word: true },
     orderBy: [{ markedHard: "desc" }, { dueDate: "asc" }],
     take: 10,
   });
 
-  let words = cards.map((c) => c.word);
+  let words = cards
+    .map((c) => c.word)
+    .filter((w): w is NonNullable<typeof w> => w != null);
 
   // 从词汇表跳转过来的字如果不在列表里，查出来放到最前面
   if (char) {

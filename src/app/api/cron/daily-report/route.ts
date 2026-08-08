@@ -3,7 +3,7 @@ import { generateAndSendDailyReport } from "@/lib/daily-report";
 
 export const maxDuration = 60;
 
-// 每天北京时间 23:00（UTC 15:00）汇总当日学习进度发给 Lin
+// 每天北京时间 23:00（UTC 15:00）汇总当日学习进度发给 Tutor
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
   if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) {

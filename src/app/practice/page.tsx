@@ -6,8 +6,8 @@ const MODES = [
   {
     href: "/practice/ai",
     emoji: "💬",
-    title: "Chat with Lin",
-    description: "Free chat with AI Lin — ask anything",
+    title: "Chat with AI tutor",
+    description: "Free chat with your AI tutor — ask anything",
   },
   {
     href: "/practice/roleplay",

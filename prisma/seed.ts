@@ -36,39 +36,78 @@ const hsk1Words = [
 ];
 
 async function main() {
-  const erikaPassword = process.env.ERIKA_PASSWORD ?? "erika2024";
-  const linPassword = process.env.LIN_PASSWORD ?? "lin2024";
+  const learnerPassword = process.env.LEARNER_PASSWORD ?? "learner2024";
+  const tutorPassword = process.env.TUTOR_PASSWORD ?? "tutor2024";
 
-  const erikaHash = await bcrypt.hash(erikaPassword, 10);
-  const linHash = await bcrypt.hash(linPassword, 10);
+  const learnerHash = await bcrypt.hash(learnerPassword, 10);
+  const tutorHash = await bcrypt.hash(tutorPassword, 10);
 
-  const erika = await prisma.user.upsert({
-    where: { username: "erika" },
-    update: { passwordHash: erikaHash },
+  await prisma.user.upsert({
+    where: { username: "learner" },
+    update: {
+      passwordHash: learnerHash,
+      email: "learner@local.dev",
+      emailVerified: new Date(),
+      displayName: "Learner",
+      platformRole: "MEMBER",
+    },
     create: {
-      username: "erika",
-      displayName: "Erika",
+      username: "learner",
+      email: "learner@local.dev",
+      emailVerified: new Date(),
+      displayName: "Learner",
       role: "LEARNER",
-      passwordHash: erikaHash,
+      platformRole: "MEMBER",
+      passwordHash: learnerHash,
       progress: { create: {} },
     },
   });
 
-  const lin = await prisma.user.upsert({
-    where: { username: "lin" },
-    update: { passwordHash: linHash },
+  await prisma.user.upsert({
+    where: { username: "tutor" },
+    update: {
+      passwordHash: tutorHash,
+      email: "tutor@local.dev",
+      emailVerified: new Date(),
+      displayName: "Tutor",
+      platformRole: "MEMBER",
+    },
     create: {
-      username: "lin",
-      displayName: "Lin",
+      username: "tutor",
+      email: "tutor@local.dev",
+      emailVerified: new Date(),
+      displayName: "Tutor",
       role: "ADMIN",
-      passwordHash: linHash,
+      platformRole: "MEMBER",
+      passwordHash: tutorHash,
       progress: { create: {} },
     },
   });
 
-  const wordRecords = [];
+  const opsPassword = process.env.OPS_PASSWORD ?? "ops2024";
+  const opsHash = await bcrypt.hash(opsPassword, 10);
+  await prisma.user.upsert({
+    where: { username: "ops" },
+    update: {
+      passwordHash: opsHash,
+      email: "ops@local.dev",
+      emailVerified: new Date(),
+      platformRole: "PLATFORM_ADMIN",
+      role: "ADMIN",
+    },
+    create: {
+      username: "ops",
+      email: "ops@local.dev",
+      emailVerified: new Date(),
+      displayName: "Platform Ops",
+      role: "ADMIN",
+      platformRole: "PLATFORM_ADMIN",
+      passwordHash: opsHash,
+    },
+  });
+
   for (const w of hsk1Words) {
-    const word = await prisma.word.upsert({
+    await prisma.word.upsert({
       where: { id: `seed-${w.simplified}` },
       update: {
         pinyin: w.pinyin,
@@ -87,12 +126,11 @@ async function main() {
         isCustom: w.simplified === "老婆" || w.simplified === "亲爱的",
       },
     });
-    wordRecords.push(word);
   }
 
   const lesson1Content = {
     intro:
-      "Welcome, Erika! Let's start with greetings and sweet words for Lin. Example explanations are in English.",
+      "Welcome! Let's start with greetings and sweet couple words. Example explanations are in English.",
     sentences: [
       {
         chinese: "你好！",
@@ -101,10 +139,10 @@ async function main() {
         english: "Hello!",
       },
       {
-        chinese: "我是 Erika。",
-        pinyin: "Wǒ shì Erika.",
-        pinyinNumber: "Wo3 shi4 Erika.",
-        english: "I am Erika.",
+        chinese: "我是学生。",
+        pinyin: "Wǒ shì xuésheng.",
+        pinyinNumber: "Wo3 shi4 xue2sheng5.",
+        english: "I am a student.",
       },
       {
         chinese: "很高兴。",
@@ -127,14 +165,14 @@ async function main() {
       },
       {
         type: "fill_blank",
-        prompt: "Complete: ___ 是 Erika",
+        prompt: "Complete: ___ 是学生",
         answer: "我",
       },
     ],
   };
 
   const lesson2Content = {
-    intro: "Words Lin uses with you — practice affectionate couple phrases.",
+    intro: "Words couples use — practice affectionate phrases.",
     sentences: [
       {
         chinese: "老婆，你好！",
@@ -162,7 +200,7 @@ async function main() {
     quiz: [
       {
         type: "listen_choice",
-        prompt: "What does 老婆 mean in Lin's context?",
+        prompt: "What does 老婆 mean in a couple context?",
         options: ["wife (affectionate)", "friend", "sister", "teacher"],
         answer: "wife (affectionate)",
       },
@@ -175,7 +213,7 @@ async function main() {
   };
 
   const lesson3Content = {
-    intro: "Practice a short video call with Lin after school.",
+    intro: "Practice a short video call with your partner after school.",
     sentences: [
       {
         chinese: "喂，老婆！",
@@ -217,7 +255,7 @@ async function main() {
   };
 
   const lesson4Content = {
-    intro: "Prepare to meet Lin's family — polite greetings and titles.",
+    intro: "Prepare to meet your partner's family — polite greetings and titles.",
     sentences: [
       {
         chinese: "叔叔好，阿姨好！",
@@ -270,8 +308,8 @@ async function main() {
     },
     {
       id: "lesson-2-couple",
-      title: "Words with Lin",
-      description: "Sweet phrases between you and Lin",
+      title: "Couple Phrases",
+      description: "Sweet phrases between partners",
       hskLevel: 1,
       sceneTag: "couple",
       order: 2,
@@ -287,7 +325,7 @@ async function main() {
     },
     {
       id: "lesson-3-call",
-      title: "Video Call with Lin",
+      title: "Video Call Practice",
       description: "After school — how was your day?",
       hskLevel: 1,
       sceneTag: "couple",
@@ -359,11 +397,11 @@ async function main() {
     }
   }
 
-  const linPhrases = [
+  const partnerPhrases = [
     {
       chinese: "老婆",
       pinyin: "lǎopó",
-      english: "wife (what Lin calls you)",
+      english: "wife (affectionate)",
     },
     {
       chinese: "亲爱的",
@@ -390,21 +428,24 @@ async function main() {
   await prisma.personCard.upsert({
     where: { id: "person-lin" },
     update: {
-      phrases: JSON.stringify(linPhrases),
+      name: "Partner",
+      relation: "Partner",
+      phrases: JSON.stringify(partnerPhrases),
     },
     create: {
       id: "person-lin",
-      name: "Lin",
-      relation: "Boyfriend",
-      phrases: JSON.stringify(linPhrases),
+      name: "Partner",
+      relation: "Partner",
+      phrases: JSON.stringify(partnerPhrases),
       order: 1,
     },
   });
 
   console.log("Seed complete.");
-  console.log(`  Learner: erika / ${erikaPassword}`);
-  console.log(`  Admin:   lin / ${linPassword}`);
-  console.log(`  Users:   ${erika.displayName}, ${lin.displayName}`);
+  console.log(`  Learner: learner / ${learnerPassword} (email learner@local.dev)`);
+  console.log(`  Tutor:   tutor / ${tutorPassword} (email tutor@local.dev)`);
+  console.log(`  Ops:     ops / ${opsPassword} (PLATFORM_ADMIN, local /ops)`);
+  console.log("  Next: run SQL add_couple_platform.sql then npm run db:backfill-platform");
 }
 
 main()

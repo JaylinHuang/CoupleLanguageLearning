@@ -1,4 +1,9 @@
-export { AI_CONFIG, LIN_SYSTEM_PROMPT, FALLBACK_REPLY } from "./config";
+export {
+  AI_CONFIG,
+  TUTOR_SYSTEM_PROMPT,
+  LIN_SYSTEM_PROMPT,
+  FALLBACK_REPLY,
+} from "./config";
 export type * from "./types";
 export { embedText, embedBatch, cosineSimilarity } from "./embeddings";
 export {

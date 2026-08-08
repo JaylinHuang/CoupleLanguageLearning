@@ -17,11 +17,11 @@ export default async function HomeworkPage() {
   return (
     <>
       <SiteHeader user={user} />
-      <PageShell title="Homework" subtitle="Tasks from Lin · text or voice">
+      <PageShell title="Homework" subtitle="Tasks from tutor · text or voice">
         <div className="space-y-4">
           {homework.length === 0 ? (
             <div className="card p-6 text-center text-warm-gray">
-              No homework yet. Lin will assign some soon!
+              No homework yet. Your tutor will assign some soon!
             </div>
           ) : (
             homework.map((hw) => {
@@ -35,7 +35,7 @@ export default async function HomeworkPage() {
                   {hw.audioPath ? (
                     <div className="mt-2 rounded-xl bg-blush/30 p-3">
                       <p className="text-xs font-medium text-coral-dark">
-                        🎧 Voice message from Lin 💕
+                        🎧 Voice message from tutor 💕
                       </p>
                       <audio src={hw.audioPath} controls className="mt-2 w-full" />
                     </div>
@@ -57,11 +57,11 @@ export default async function HomeworkPage() {
                       ) : null}
                       {submission.feedback ? (
                         <p className="mt-2 font-medium text-coral-dark">
-                          Lin: {submission.feedback}
+                          Tutor: {submission.feedback}
                         </p>
                       ) : (
                         <p className="mt-2 text-warm-gray">
-                          Waiting for Lin&apos;s feedback...
+                          Waiting for tutor&apos;s feedback...
                         </p>
                       )}
                     </div>

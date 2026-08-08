@@ -7,6 +7,7 @@ import {
   type LegacyProgressItem,
 } from "@/components/lesson-attempt-history";
 import { VocabProgress } from "@/components/vocab-progress";
+import { getCoupleLearnerUserId } from "@/lib/couple";
 import { prisma } from "@/lib/db";
 import { getVocabStats } from "@/lib/vocab-stats";
 import type { QuizAnswerDetail } from "@/lib/types";
@@ -20,10 +21,17 @@ type GrammarResult = {
 export default async function AdminProgressPage() {
   const admin = await requireAdmin();
 
-  const erika = await prisma.user.findUnique({
-    where: { username: "erika" },
-    include: { progress: true },
-  });
+  const learnerId = admin.coupleId
+    ? await getCoupleLearnerUserId(admin.coupleId)
+    : (
+        await prisma.user.findFirst({ where: { role: "LEARNER" } })
+      )?.id;
+  const learner = learnerId
+    ? await prisma.user.findUnique({
+        where: { id: learnerId },
+        include: { progress: true },
+      })
+    : null;
 
   const wishes = await prisma.wishItem.findMany({
     where: { status: "OPEN" },
@@ -31,17 +39,19 @@ export default async function AdminProgressPage() {
     include: { user: { select: { displayName: true } } },
   });
 
-  const hardCards = erika
-    ? await prisma.reviewCard.findMany({
-        where: { userId: erika.id, markedHard: true },
-        include: { word: true },
-      })
-    : [];
+  const hardCards = (
+    learner
+      ? await prisma.reviewCard.findMany({
+          where: { userId: learner.id, markedHard: true },
+          include: { word: true },
+        })
+      : []
+  ).filter((c): c is typeof c & { word: NonNullable<typeof c.word> } => c.word != null);
 
   // 每次答题的完整记录（新数据，可查看逐题详情）
-  const attemptRows = erika
+  const attemptRows = learner
     ? await prisma.lessonAttempt.findMany({
-        where: { userId: erika.id },
+        where: { userId: learner.id },
         include: { lesson: { select: { title: true } } },
         orderBy: { completedAt: "desc" },
       })
@@ -65,9 +75,9 @@ export default async function AdminProgressPage() {
 
   // 旧记录：功能上线前完成的课程只有汇总进度，没有逐题数据
   const attemptLessonIds = new Set(attemptRows.map((a) => a.lessonId));
-  const legacyRows = erika
+  const legacyRows = learner
     ? await prisma.lessonProgress.findMany({
-        where: { userId: erika.id, lessonId: { notIn: [...attemptLessonIds] } },
+        where: { userId: learner.id, lessonId: { notIn: [...attemptLessonIds] } },
         include: { lesson: { select: { title: true } } },
         orderBy: { updatedAt: "desc" },
       })
@@ -81,10 +91,10 @@ export default async function AdminProgressPage() {
   }));
 
   // 词汇量统计 + 最近的写作纠错练习
-  const vocabStats = erika ? await getVocabStats(erika.id) : [];
-  const grammarRows = erika
+  const vocabStats = learner ? await getVocabStats(learner.id) : [];
+  const grammarRows = learner
     ? await prisma.grammarCorrection.findMany({
-        where: { userId: erika.id },
+        where: { userId: learner.id },
         orderBy: { createdAt: "desc" },
         take: 10,
       })
@@ -114,23 +124,23 @@ export default async function AdminProgressPage() {
             </button>
           </form>
         </div>
-        {erika?.progress ? (
+        {learner?.progress ? (
           <div className="card mb-6 grid gap-2 p-4 sm:grid-cols-4">
             <div>
               <p className="text-xs text-warm-gray">XP</p>
-              <p className="text-xl font-semibold">{erika.progress.xp}</p>
+              <p className="text-xl font-semibold">{learner.progress.xp}</p>
             </div>
             <div>
               <p className="text-xs text-warm-gray">Level</p>
-              <p className="text-xl font-semibold">{erika.progress.level}</p>
+              <p className="text-xl font-semibold">{learner.progress.level}</p>
             </div>
             <div>
               <p className="text-xs text-warm-gray">Streak</p>
-              <p className="text-xl font-semibold">{erika.progress.streak}</p>
+              <p className="text-xl font-semibold">{learner.progress.streak}</p>
             </div>
             <div>
               <p className="text-xs text-warm-gray">HSK focus</p>
-              <p className="text-xl font-semibold">HSK {erika.progress.hskLevel}</p>
+              <p className="text-xl font-semibold">HSK {learner.progress.hskLevel}</p>
             </div>
           </div>
         ) : null}
@@ -180,8 +190,8 @@ export default async function AdminProgressPage() {
         <div className="mt-6">
           <h2 className="mb-3 font-medium text-warm-brown">Lesson history</h2>
           <p className="mb-2 text-xs text-warm-gray">
-            Click a record to see every question, her answer and the correct
-            answer.
+            Click a record to see every question, the learner&apos;s answer and
+            the correct answer.
           </p>
           <LessonAttemptHistory attempts={attempts} legacy={legacy} />
         </div>

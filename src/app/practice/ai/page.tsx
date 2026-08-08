@@ -9,7 +9,7 @@ export default async function AiPracticePage() {
     <>
       <SiteHeader user={user} />
       <PageShell
-        title="Chat with Lin"
+        title="Chat with AI tutor"
         subtitle="AI practice · relaxed conversation · DeepSeek"
       >
         <AiChat />

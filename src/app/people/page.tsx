@@ -6,27 +6,28 @@ import { parsePersonPhrases } from "@/lib/types";
 export default async function PeoplePage() {
   const user = await requireLearner();
 
-  const lin = await prisma.personCard.findFirst({
-    where: { name: "Lin" },
-  });
+  // 兼容旧 seed 的 name=Lin 与新 seed 的 Partner
+  const partner =
+    (await prisma.personCard.findFirst({ where: { name: "Partner" } })) ??
+    (await prisma.personCard.findFirst({ where: { name: "Lin" } }));
 
-  const phrases = lin ? parsePersonPhrases(lin.phrases) : [];
+  const phrases = partner ? parsePersonPhrases(partner.phrases) : [];
 
   return (
     <>
       <SiteHeader user={user} />
       <PageShell
-        title="Lin"
-        subtitle="Phrases your boyfriend uses · Mga pariralang ginagamit ni Lin"
+        title="Partner"
+        subtitle="Phrases your partner uses · Mga pariralang ginagamit"
       >
-        {lin ? (
+        {partner ? (
           <div className="space-y-4">
             <div className="card p-5">
               <p className="text-4xl">💑</p>
               <h2 className="mt-2 text-xl font-semibold text-warm-brown">
-                {lin.name}
+                {partner.name}
               </h2>
-              <p className="text-sm text-warm-gray">{lin.relation}</p>
+              <p className="text-sm text-warm-gray">{partner.relation}</p>
             </div>
 
             <div className="space-y-3">
@@ -43,7 +44,7 @@ export default async function PeoplePage() {
           </div>
         ) : (
           <div className="card p-6 text-center text-warm-gray">
-            Lin&apos;s card is not set up yet.
+            Partner card is not set up yet.
           </div>
         )}
       </PageShell>

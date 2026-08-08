@@ -12,10 +12,10 @@ export type GrammarCheckResult = {
 };
 
 const SYSTEM_PROMPT = [
-  "你是耐心的中文老师。学习者 Erika（HSK1-2 水平，母语英语/塔加洛语）写了中文句子，请批改。",
+  "你是耐心的中文老师。学习者（HSK1-2 水平，母语英语/塔加洛语）写了中文句子，请批改。",
   "以严格 JSON 返回，结构如下：",
-  '{"corrected":"改正后的完整句子","errors":[{"original":"错误片段","fixed":"正确写法","explanation":"简短英文解释（附拼音）"}],"praise":"一句英文鼓励，提及她做对的地方"}',
-  "如果没有错误，errors 为空数组，corrected 与原句相同。explanation 必须是 Erika 能看懂的简单英文。",
+  '{"corrected":"改正后的完整句子","errors":[{"original":"错误片段","fixed":"正确写法","explanation":"简短英文解释（附拼音）"}],"praise":"一句英文鼓励，提及做对的地方"}',
+  "如果没有错误，errors 为空数组，corrected 与原句相同。explanation 必须是学习者能看懂的简单英文。",
 ].join("\n");
 
 export async function POST(req: NextRequest) {
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     praise: parsed.praise ?? "Good effort! Keep writing!",
   };
 
-  // 归档批改记录供 Lin 查看
+  // 归档批改记录供导师查看
   await prisma.grammarCorrection.create({
     data: {
       userId: session.id,

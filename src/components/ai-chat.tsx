@@ -23,7 +23,7 @@ export function AiChat() {
     {
       role: "assistant",
       content:
-        "老婆，你好！我是 Lin，在上海上班呢。今天学校怎么样？想聊什么都可以～",
+        "你好！我是你的 AI 学习伙伴。今天想练中文、聊天都可以～",
     },
   ]);
   const [input, setInput] = useState("");
@@ -168,7 +168,7 @@ export function AiChat() {
             >
               {m.role === "assistant" ? (
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <p className="text-xs font-medium text-coral-dark">Lin 💕</p>
+                  <p className="text-xs font-medium text-coral-dark">Tutor AI</p>
                   {m.content ? (
                     <SpeakButton
                       text={chineseForTTS(m.content)}
@@ -188,7 +188,7 @@ export function AiChat() {
           </div>
         ))}
         {loading && !streaming ? (
-          <p className="text-sm text-warm-gray">Lin is typing...</p>
+          <p className="text-sm text-warm-gray">Partner is typing...</p>
         ) : null}
         <div ref={bottomRef} />
       </div>
@@ -202,7 +202,7 @@ export function AiChat() {
 
       {turns >= 3 && xpAwarded ? (
         <p className="mt-3 text-center text-xs text-success">
-          +5 XP earned for chatting with Lin today!
+          +5 XP earned for chatting with Tutor AI today!
         </p>
       ) : turns >= 3 ? null : (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -228,7 +228,7 @@ export function AiChat() {
       >
         <input
           className="input"
-          placeholder="Say something to Lin..."
+          placeholder="Say something to your AI partner..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={loading || streaming}

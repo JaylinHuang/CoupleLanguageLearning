@@ -66,7 +66,7 @@ export function classifyIntent(query: string): IntentResult {
 export async function getUserLearningContext(userId: string) {
   const progress = await prisma.userProgress.findUnique({ where: { userId } });
   const dueCards = await prisma.reviewCard.findMany({
-    where: { userId, dueDate: { lte: new Date() } },
+    where: { userId, dueDate: { lte: new Date() }, wordId: { not: null } },
     include: { word: true },
     take: 10,
   });
@@ -75,7 +75,9 @@ export async function getUserLearningContext(userId: string) {
     hskLevel: progress?.hskLevel ?? 1,
     xp: progress?.xp ?? 0,
     streak: progress?.streak ?? 0,
-    dueWords: dueCards.map((c) => c.word.simplified),
+    dueWords: dueCards
+      .map((c) => c.word?.simplified)
+      .filter((s): s is string => Boolean(s)),
   };
 }
 

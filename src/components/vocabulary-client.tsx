@@ -26,7 +26,7 @@ export function VocabularyClient({ words }: { words: WordRow[] }) {
           required
         />
         <button type="submit" className="btn-primary">
-          Send to Lin
+          Send to tutor
         </button>
       </form>
 

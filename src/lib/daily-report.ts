@@ -2,9 +2,11 @@ import { prisma } from "@/lib/db";
 import { sendNotificationEmail } from "@/lib/email";
 import { deepseekText } from "@/lib/deepseek-json";
 import { shanghaiDayRange, formatShanghai } from "@/lib/timezone";
+import { resolveDefaultLearnerUser } from "@/lib/couple";
+import { mailSubjectPrefix, siteName } from "@/lib/branding";
 import type { QuizAnswerDetail } from "@/lib/types";
 
-// 汇总 Erika「上海时区当天」的学习进度，晚上 23:00 发给 Lin
+/** 汇总默认 ACTIVE 情侣 learner 当天进度，发给 Tutor */
 export async function generateAndSendDailyReport(): Promise<{
   sent: boolean;
   text: string;
@@ -12,15 +14,20 @@ export async function generateAndSendDailyReport(): Promise<{
 }> {
   const { day, start, end } = shanghaiDayRange();
 
-  const erika = await prisma.user.findUnique({
-    where: { username: "erika" },
-    include: { progress: true },
-  });
-  if (!erika) return { sent: false, text: "Erika account not found" };
+  const base = await resolveDefaultLearnerUser();
+  const learner = base
+    ? await prisma.user.findUnique({
+        where: { id: base.id },
+        include: { progress: true },
+      })
+    : null;
+  if (!learner) return { sent: false, text: "Learner account not found" };
+
+  const name = learner.displayName;
 
   const attempts = await prisma.lessonAttempt.findMany({
     where: {
-      userId: erika.id,
+      userId: learner.id,
       completedAt: { gte: start, lte: end },
     },
     include: { lesson: { select: { title: true } } },
@@ -53,21 +60,21 @@ export async function generateAndSendDailyReport(): Promise<{
 
   const reviewedCount = await prisma.reviewCard.count({
     where: {
-      userId: erika.id,
+      userId: learner.id,
       lastReview: { gte: start, lte: end },
     },
   });
 
   const grammarCount = await prisma.grammarCorrection.count({
     where: {
-      userId: erika.id,
+      userId: learner.id,
       createdAt: { gte: start, lte: end },
     },
   });
 
   const homeworkSubs = await prisma.homeworkSubmission.findMany({
     where: {
-      userId: erika.id,
+      userId: learner.id,
       submittedAt: { gte: start, lte: end },
     },
     include: { homework: { select: { title: true } } },
@@ -75,7 +82,7 @@ export async function generateAndSendDailyReport(): Promise<{
 
   const wishes = await prisma.wishItem.findMany({
     where: {
-      userId: erika.id,
+      userId: learner.id,
       createdAt: { gte: start, lte: end },
     },
   });
@@ -87,12 +94,11 @@ export async function generateAndSendDailyReport(): Promise<{
     homeworkSubs.length > 0 ||
     wishes.length > 0;
 
-  // 当天完全没学习就不发邮件，避免空日报打扰
   if (!hasActivity) {
     return {
       sent: false,
       skipped: true,
-      text: `今天（${day}）Erika 没有学习记录，跳过日报。`,
+      text: `今天（${day}）${name} 没有学习记录，跳过日报。`,
     };
   }
 
@@ -102,7 +108,7 @@ export async function generateAndSendDailyReport(): Promise<{
       : null;
 
   const lines: string[] = [
-    `Erika 学习日报（${day}）`,
+    `${name} 学习日报（${day}）`,
     ``,
     `【今日概况】`,
     `- 完成课程：${attempts.length} 次${avgScore != null ? `（平均 ${avgScore}%）` : ""}`,
@@ -110,7 +116,7 @@ export async function generateAndSendDailyReport(): Promise<{
     `- 写作纠错：${grammarCount} 次`,
     `- 提交作业：${homeworkSubs.length} 份`,
     `- 学习愿望：${wishes.length} 条`,
-    `- 当前连胜：${erika.progress?.streak ?? 0} 天 · Lv.${erika.progress?.level ?? 1}（${erika.progress?.xp ?? 0} XP）`,
+    `- 当前连胜：${learner.progress?.streak ?? 0} 天 · Lv.${learner.progress?.level ?? 1}（${learner.progress?.xp ?? 0} XP）`,
   ];
 
   if (attempts.length > 0) {
@@ -127,7 +133,7 @@ export async function generateAndSendDailyReport(): Promise<{
     for (const w of wrongAnswers.slice(0, 12)) {
       lines.push(
         `- [${w.lesson}] ${w.prompt}`,
-        `  她答：${w.userAnswer || "（未作答）"} → 正确：${w.correctAnswer}`,
+        `  作答：${w.userAnswer || "（未作答）"} → 正确：${w.correctAnswer}`,
       );
     }
   }
@@ -147,7 +153,7 @@ export async function generateAndSendDailyReport(): Promise<{
   }
 
   const aiComment = await deepseekText(
-    "你是中文老师助理。根据今天的学习数据，用中文给她男朋友 Lin 写 2-3 句简短点评：先肯定，再点出最该巩固的一点。语气温暖，不要列表。",
+    "你是中文老师助理。根据今天的学习数据，用中文给学习者的辅导老师写 2-3 句简短点评：先肯定，再点出最该巩固的一点。语气温暖，不要列表。",
     lines.join("\n"),
     200,
   );
@@ -155,11 +161,11 @@ export async function generateAndSendDailyReport(): Promise<{
     lines.push(``, `【AI 点评】`, aiComment);
   }
 
-  lines.push(``, `— Jaylin_love_Erika 每日汇总（每天 23:00 发送）`);
+  lines.push(``, `— ${siteName()} 每日汇总（每天 23:00 发送）`);
 
   const text = lines.join("\n");
   const sent = await sendNotificationEmail({
-    subject: `[Jaylin_love_Erika] Erika 学习日报 ${day}`,
+    subject: `${mailSubjectPrefix()} ${name} 学习日报 ${day}`,
     text,
   });
 

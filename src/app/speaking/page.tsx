@@ -13,17 +13,20 @@ export default async function SpeakingPage() {
     take: 12,
   });
 
-  const lin = await prisma.personCard.findFirst({ where: { name: "Lin" } });
-  const linPhrases = lin
-    ? parsePersonPhrases(lin.phrases).map((p, i) => ({
-        id: `lin-${i}`,
+  // 兼容旧 seed 的 name=Lin 与新 seed 的 Partner
+  const partner =
+    (await prisma.personCard.findFirst({ where: { name: "Partner" } })) ??
+    (await prisma.personCard.findFirst({ where: { name: "Lin" } }));
+  const partnerPhrases = partner
+    ? parsePersonPhrases(partner.phrases).map((p, i) => ({
+        id: `partner-${i}`,
         chinese: p.chinese,
         pinyin: p.pinyin,
         english: p.english,
       }))
     : [];
 
-  const phrases = buildSpeakingPhrases(words, linPhrases);
+  const phrases = buildSpeakingPhrases(words, partnerPhrases);
 
   return (
     <>

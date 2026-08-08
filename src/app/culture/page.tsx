@@ -10,7 +10,7 @@ export default async function CulturePage() {
       <SiteHeader user={user} />
       <PageShell
         title="Culture & Etiquette"
-        subtitle="Small guide for meeting Lin's family · Mga tip sa kultura"
+        subtitle="Small guide for meeting family · Mga tip sa kultura"
       >
         <div className="space-y-6">
           {cultureArticles.map((article) => (

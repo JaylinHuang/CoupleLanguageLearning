@@ -13,7 +13,7 @@ export type SmartQuizQuestion = {
 
 const SYSTEM_PROMPT = [
   "你是中文出题老师。根据学习者最近的错题和难词，出 5 道新的练习题帮她巩固薄弱点（变式练习，不要照抄原题）。",
-  "学习者 Erika：HSK1-2 水平，母语英语。题目用英文提问（可包含中文词），explanation 用简短英文。",
+  "学习者：HSK1-2 水平，母语英语。题目用英文提问（可包含中文词），explanation 用简短英文。",
   "以严格 JSON 返回：",
   '{"questions":[{"type":"choice","prompt":"...","options":["A","B","C","D"],"answer":"正确选项原文","explanation":"..."},{"type":"fill_blank","prompt":"...","answer":"单个词或短语","explanation":"..."}]}',
   "choice 题必须恰好 4 个选项且 answer 是其中之一；fill_blank 的答案要短且唯一。混合两种题型。",
@@ -80,10 +80,14 @@ export async function POST() {
   }
 
   const hardCards = await prisma.reviewCard.findMany({
-    where: { userId: session.id, markedHard: true },
+    where: { userId: session.id, markedHard: true, wordId: { not: null } },
     include: { word: true },
     take: 10,
   });
+  const hardWithWord = hardCards.filter(
+    (c): c is typeof c & { word: NonNullable<(typeof c)["word"]>; wordId: string } =>
+      c.word != null && c.wordId != null,
+  );
 
   const material = [
     wrongAnswers.length > 0
@@ -92,8 +96,8 @@ export async function POST() {
           .map((w) => `- 题目「${w.prompt}」正确答案「${w.correctAnswer}」她答成「${w.userAnswer || "未作答"}」`)
           .join("\n")}`
       : "",
-    hardCards.length > 0
-      ? `标记为难的词：${hardCards.map((c) => `${c.word.simplified}(${c.word.pinyin}, ${c.word.english})`).join("、")}`
+    hardWithWord.length > 0
+      ? `标记为难的词：${hardWithWord.map((c) => `${c.word.simplified}(${c.word.pinyin}, ${c.word.english})`).join("、")}`
       : "",
   ]
     .filter(Boolean)
@@ -118,6 +122,6 @@ export async function POST() {
   }
 
   // AI 失败或没有素材：本地生成
-  const fallback = await buildFallbackQuestions(hardCards.map((c) => c.wordId));
+  const fallback = await buildFallbackQuestions(hardWithWord.map((c) => c.wordId));
   return Response.json({ questions: fallback, source: "fallback" });
 }

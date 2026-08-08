@@ -1,7 +1,7 @@
 import {
   AI_CONFIG,
   FALLBACK_REPLY,
-  LIN_SYSTEM_PROMPT,
+  TUTOR_SYSTEM_PROMPT,
   getDeepSeekBaseUrl,
 } from "./config";
 import { retrieve, formatContext } from "./retriever";
@@ -30,7 +30,7 @@ export function buildSystemPrompt(
   ragContext: RagContext,
   userContext?: { hskLevel?: number; dueWords?: string[] },
 ): string {
-  const parts = [LIN_SYSTEM_PROMPT];
+  const parts = [TUTOR_SYSTEM_PROMPT];
 
   if (userContext?.hskLevel) {
     parts.push(`\n## Learner progress\n- Current HSK level: ${userContext.hskLevel}`);

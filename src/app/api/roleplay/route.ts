@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   // 结束对话：生成学习反馈
   if (feedback) {
     const transcript = history
-      .map((m) => `${m.role === "user" ? "Erika" : scenario.titleZh}: ${m.content}`)
+      .map((m) => `${m.role === "user" ? "Learner" : scenario.titleZh}: ${m.content}`)
       .join("\n");
     const reply = await deepseekText(
       buildRoleplayFeedbackPrompt(scenario),
@@ -46,11 +46,11 @@ export async function POST(req: NextRequest) {
 
   // 普通对话轮次
   const conversation = history
-    .map((m) => `${m.role === "user" ? "Erika" : "你"}：${m.content}`)
+    .map((m) => `${m.role === "user" ? "Learner" : "你"}：${m.content}`)
     .join("\n");
   const reply = await deepseekText(
     buildRoleplaySystemPrompt(scenario),
-    `对话记录：\n${conversation}\n\n请以角色身份回复 Erika 的最后一句话。`,
+    `对话记录：\n${conversation}\n\n请以角色身份回复学习者的最后一句话。`,
     400,
   );
 

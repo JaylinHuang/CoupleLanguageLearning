@@ -11,7 +11,9 @@ import {
   createNotification,
 } from "@/lib/progress";
 import { XP_REWARDS } from "@/lib/constants";
-import { notifyLin } from "@/lib/email";
+import { notifyTutor } from "@/lib/email";
+import { resolveTutorUserForLearner } from "@/lib/couple";
+import { siteName } from "@/lib/branding";
 import { requireLearner, requireAdmin } from "./auth";
 import { sm2, type ReviewQuality } from "@/lib/srs";
 import type { QuizAnswerDetail, LessonContent } from "@/lib/types";
@@ -29,7 +31,7 @@ export async function completeLessonAction(
   });
   if (!lesson) throw new Error("Lesson not found");
 
-  // 每次完成都单独存一条答题记录，保留全部历史供 Lin / Erika 查看错题
+  // 每次完成都单独存一条答题记录，保留全部历史供 Tutor / Learner 查看错题
   await prisma.lessonAttempt.create({
     data: {
       userId: user.id,
@@ -100,10 +102,10 @@ export async function completeLessonAction(
     await unlockBadge(user.id, "first_lesson");
   }
 
-  const lin = await prisma.user.findUnique({ where: { username: "lin" } });
-  if (lin) {
+  const tutor = await resolveTutorUserForLearner(user.id);
+  if (tutor) {
     await createNotification(
-      lin.id,
+      tutor.id,
       "study_complete",
       "Lesson completed",
       `${user.displayName} completed "${lesson.title}" with score ${score}%.`,
@@ -190,19 +192,19 @@ export async function addWishAction(text: string) {
     data: { userId: user.id, text: trimmed },
   });
 
-  const lin = await prisma.user.findUnique({ where: { username: "lin" } });
-  if (lin) {
+  const tutor = await resolveTutorUserForLearner(user.id);
+  if (tutor) {
     await createNotification(
-      lin.id,
+      tutor.id,
       "wish_added",
       "New learning wish",
       `${user.displayName}: ${trimmed}`,
     );
   }
 
-  await notifyLin(
+  await notifyTutor(
     "wish_added",
-    `Erika wants to learn:\n"${trimmed}"\n\nJaylin_love_Erika`,
+    `${user.displayName} wants to learn:\n"${trimmed}"\n\n${siteName()}`,
   );
 
   revalidatePath("/vocabulary");
@@ -230,10 +232,10 @@ export async function submitHomeworkAction(formData: FormData) {
   await recordStudyDay(user.id);
 
   const homework = await prisma.homework.findUnique({ where: { id: homeworkId } });
-  const lin = await prisma.user.findUnique({ where: { username: "lin" } });
-  if (lin && homework) {
+  const tutor = await resolveTutorUserForLearner(user.id);
+  if (tutor && homework) {
     await createNotification(
-      lin.id,
+      tutor.id,
       "homework_submitted",
       "Homework submitted",
       `${user.displayName} submitted "${homework.title}".`,
@@ -258,7 +260,7 @@ export async function createHomeworkAction(formData: FormData) {
       assignedById: admin.id,
       title,
       description: description || null,
-      audioPath, // Lin 的语音留言
+      audioPath, // Tutor 的语音留言
       payload: JSON.stringify({ type: "general" }),
     },
   });
@@ -287,7 +289,7 @@ export async function reviewHomeworkAction(formData: FormData) {
     submission.userId,
     "homework_reviewed",
     "Homework feedback",
-    `Lin reviewed "${submission.homework.title}": ${feedback || "Great job!"}`,
+    `Tutor reviewed "${submission.homework.title}": ${feedback || "Great job!"}`,
   );
 
   revalidatePath("/admin/homework");
@@ -455,7 +457,7 @@ export async function completeHandwritingAction() {
   revalidatePath("/");
 }
 
-// Lin 在管理后台手动触发日报 / 周报（用于测试）
+// Tutor 在管理后台手动触发日报 / 周报（用于测试）
 export async function sendDailyReportAction() {
   await requireAdmin();
   const { generateAndSendDailyReport } = await import("@/lib/daily-report");

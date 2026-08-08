@@ -31,7 +31,7 @@ export default async function VocabularyPage() {
   return (
     <>
       <SiteHeader user={user} />
-      <PageShell title="Vocabulary" subtitle="Mark hard words · Tell Lin what you want to learn">
+      <PageShell title="Vocabulary" subtitle="Mark hard words · Tell your tutor what you want to learn">
         <VocabularyClient words={rows} />
       </PageShell>
     </>

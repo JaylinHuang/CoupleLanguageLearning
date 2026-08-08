@@ -9,13 +9,15 @@ export default async function DictationPage() {
 
   // 优先用她正在复习的词，凑不够再补词库里的词
   const cards = await prisma.reviewCard.findMany({
-    where: { userId: user.id },
+    where: { userId: user.id, wordId: { not: null } },
     include: { word: true },
     orderBy: { dueDate: "asc" },
     take: 12,
   });
 
-  let words = cards.map((c) => c.word);
+  let words = cards
+    .map((c) => c.word)
+    .filter((w): w is NonNullable<typeof w> => w != null);
   if (words.length < 8) {
     const extra = await prisma.word.findMany({
       where: { id: { notIn: words.map((w) => w.id) } },

@@ -76,12 +76,12 @@ export default async function HomePage() {
             subtitle:
               nextLesson.description ?? "Continue your next lesson · ~10 min",
             cta: "Start lesson",
-            badge: nextLesson.sceneTag === "couple" ? "With Lin 💕" : "Main task",
+            badge: nextLesson.sceneTag === "couple" ? "Couple practice 💕" : "Main task",
           }
         : {
             href: "/practice",
             title: "All lessons complete!",
-            subtitle: "Practice what you know, or ask Lin for more content.",
+            subtitle: "Practice what you know, or ask your tutor for more content.",
             cta: "Open Practice",
             badge: "Main task",
           };
@@ -137,7 +137,7 @@ export default async function HomePage() {
               href="/homework"
               className="card block p-4 transition hover:shadow-md"
             >
-              <p className="font-medium">Homework from Lin</p>
+              <p className="font-medium">Homework from tutor</p>
               <p className="text-sm text-warm-gray">
                 {openHomework} pending · Takdang-aralin
               </p>
@@ -184,7 +184,7 @@ export default async function HomePage() {
             href="/practice/ai"
             className="card block p-4 transition hover:shadow-md"
           >
-            <p className="font-medium">Chat with Lin AI 💕</p>
+            <p className="font-medium">Chat with AI tutor 💕</p>
             <p className="text-sm text-warm-gray">Relaxed Mandarin conversation</p>
           </Link>
         </div>
