@@ -7,9 +7,9 @@ import { sendNotificationEmail } from "../src/lib/email";
 
 async function main() {
   const sent = await sendNotificationEmail({
-    subject: "[Jaylin_love_Erika] Test notification",
-    text: "This is a test email from Erika's Chinese Learning site.\n\nIf you received this, SMTP is working!",
-    html: "<p>This is a <strong>test email</strong> from <em>Jaylin_love_Erika</em>.</p><p>If you received this, SMTP is working!</p>",
+    subject: "[CoupleLanguageLearning] Test notification",
+    text: "This is a test email from CoupleLanguageLearning.\n\nIf you received this, SMTP is working!",
+    html: "<p>This is a <strong>test email</strong> from <em>CoupleLanguageLearning</em>.</p><p>If you received this, SMTP is working!</p>",
   });
 
   if (sent) {

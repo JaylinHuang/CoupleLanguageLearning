@@ -28,7 +28,7 @@ function renderReport(reports: BenchReport[]): string {
   return `# AI 服务性能报告
 
 > 自动生成 · ${new Date().toISOString().slice(0, 10)}  
-> 项目：Jaylin_love_Erika · Erika's Chinese Learning
+> 项目：CoupleLanguageLearning
 
 ## 测试环境
 

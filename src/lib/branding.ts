@@ -1,7 +1,7 @@
 /** 站点品牌（与具体人名无关；可用环境变量覆盖） */
 
 export function siteName() {
-  return process.env.NEXT_PUBLIC_SITE_NAME ?? "CoupleLearn";
+  return process.env.NEXT_PUBLIC_SITE_NAME ?? "CoupleLanguageLearning";
 }
 
 export function siteTagline() {

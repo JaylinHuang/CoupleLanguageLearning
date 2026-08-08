@@ -1,7 +1,7 @@
 {
-  "name": "Jaylin_love_Erika",
-  "short_name": "Erika中文",
-  "description": "Private Chinese learning for Erika",
+  "name": "CoupleLanguageLearning",
+  "short_name": "CoupleLang",
+  "description": "Private couple language tutoring",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff8f3",

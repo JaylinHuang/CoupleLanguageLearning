@@ -90,7 +90,7 @@ async function main() {
         slug: "demo-couple",
         displayName: "Demo Couple",
         status: "ACTIVE",
-        siteTitle: "CoupleLearn",
+        siteTitle: "CoupleLanguageLearning",
         learnerNickname: "老婆",
         tutorNickname: "Tutor",
         memberships: {
@@ -109,7 +109,7 @@ async function main() {
       data: {
         slug: taken && taken.id !== couple.id ? couple.slug : "demo-couple",
         displayName: "Demo Couple",
-        siteTitle: "CoupleLearn",
+        siteTitle: "CoupleLanguageLearning",
         tutorNickname: "Tutor",
       },
     });

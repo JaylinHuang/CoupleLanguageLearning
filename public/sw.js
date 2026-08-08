@@ -1,5 +1,5 @@
 // PWA Service Worker：页面走网络优先（离线回退缓存），静态资源缓存优先
-const CACHE = "jaylin-love-erika-v2";
+const CACHE = "couple-language-learning-v1";
 const PRECACHE = ["/manifest.json", "/icons/icon.svg"];
 
 self.addEventListener("install", (event) => {

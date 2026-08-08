@@ -1,6 +1,6 @@
 # 量化后端面试材料 · 中文学习 AI 辅导后端
 
-> 项目：Jaylin_love_Erika（中文学习 AI 辅导后端 · 全栈）  
+> 项目：CoupleLanguageLearning（中文学习 AI 辅导后端 · 全栈）  
 > 线上 Demo：https://jaylin-love-erika.vercel.app  
 > 适用岗位：**量化后端 / 平台后端 / 低延迟服务研发**  
 > 配套：简历项目块见 `docs/RESUME_INTERVIEW_PACK.md`；性能实测见 `docs/AI_PERFORMANCE.md`

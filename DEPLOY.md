@@ -1,6 +1,6 @@
-# 公网部署指南 — Jaylin_love_Erika
+# 公网部署指南 — CoupleLanguageLearning
 
-让 Erika 在菲律宾、你在上海都能访问。
+让双方都能远程访问同一套学习站点。
 
 **推荐方案**：Vercel（网站）+ Neon（PostgreSQL 数据库）  
 **预计时间**：约 15 分钟  
@@ -64,7 +64,7 @@ npm run db:seed
 | `SMTP_USER` | 你的 QQ 邮箱 |
 | `SMTP_PASS` | QQ SMTP 授权码 |
 | `NOTIFY_EMAIL` | 接收通知的邮箱 |
-| `NEXT_PUBLIC_SITE_NAME` | `Jaylin_love_Erika` |
+| `NEXT_PUBLIC_SITE_NAME` | `CoupleLanguageLearning` |
 
 5. 点击 **Deploy**，等待构建完成  
 6. 得到公网地址，例如：`https://jaylin-love-erika.vercel.app`

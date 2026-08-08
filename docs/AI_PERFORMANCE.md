@@ -1,7 +1,7 @@
 # AI 服务性能报告
 
 > 测试日期：2026-07-12  
-> 项目：Jaylin_love_Erika · Erika's Chinese Learning  
+> 项目：CoupleLanguageLearning  
 > 生产地址：https://jaylin-love-erika.vercel.app
 
 ## 测试环境

@@ -1,8 +1,8 @@
-# Erika's Chinese Learning
+# CoupleLanguageLearning
 
-Private Chinese learning site for Erika — **Jaylin_love_Erika**
+Private couple language tutoring platform — **CoupleLanguageLearning**
 
-A warm, couple-themed web app to help Erika learn Simplified Mandarin (HSK-based), with personalized content from Lin, spaced repetition, homework, and email notifications.
+A couple-themed web app for learning together (HSK-based Mandarin by default), with personalized content, spaced repetition, homework, and email notifications.
 
 ## Features (P0–P9+)
 
@@ -58,7 +58,7 @@ Change passwords in `.env` before seeding, or update hashes in the database.
 | `SMTP_*` | QQ mail SMTP for notifications |
 | `NOTIFY_EMAIL` | Lin's notification email |
 | `CRON_SECRET` | Optional; protects `/api/cron/*` (Vercel Cron) |
-| `NEXT_PUBLIC_SITE_NAME` | `Jaylin_love_Erika` |
+| `NEXT_PUBLIC_SITE_NAME` | `CoupleLanguageLearning` |
 
 ### QQ Mail SMTP setup
 
@@ -149,11 +149,11 @@ gh auth login
 # 3. First commit + create private repo and push
 git add .
 git commit -m "Initial commit: Erika Chinese learning app"
-gh repo create ErikasChineseLearning --private --source=. --remote=origin --push
+gh repo create CoupleLanguageLearning --private --source=. --remote=origin --push
 ```
 
 After GitHub is connected, Vercel can **Import Git Repository** for auto-deploy on `git push` (see [DEPLOY.md](./DEPLOY.md)).
 
 ## License
 
-Private project — Jaylin_love_Erika
+Private project — CoupleLanguageLearning

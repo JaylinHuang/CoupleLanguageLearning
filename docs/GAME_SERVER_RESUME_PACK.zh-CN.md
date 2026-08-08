@@ -1,6 +1,6 @@
 # 简历项目包装 · 投递「游戏服务器开发」校招
 
-> 源项目：CoupleLearn / 原 ErikasChineseLearning（在线学习辅导后端）  
+> 源项目：CoupleLanguageLearning（在线学习辅导后端）  
 > 目标岗位：游戏研发 - 游戏服务器开发（上海 · 2027 届）  
 > Demo（若仍可访问）：以你当前 Vercel 域名为准  
 

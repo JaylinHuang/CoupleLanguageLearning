@@ -1,6 +1,6 @@
 # 简历投递材料 · AI 后端开发工程师
 
-> 项目：中文学习 AI 辅导后端（Jaylin_love_Erika）  
+> 项目：中文学习 AI 辅导后端（CoupleLanguageLearning）  
 > 线上 Demo：https://jaylin-love-erika.vercel.app  
 > 适用岗位：平台研发 · AI 后端开发工程师（上海 · 2027 届）
 
